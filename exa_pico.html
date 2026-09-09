@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evaluación Diagnóstica - 6° de Primaria</title>
+    <style>
+        :root {
+            --primary-color: #2b5c8f;
+            --secondary-color: #4a90e2;
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --text-color: #2c3e50;
+            --correct-color: #27ae60;
+            --border-radius: 10px;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+            background-color: var(--card-bg);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        header {
+            text-align: center;
+            border-bottom: 3px solid var(--primary-color);
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 5px;
+            font-size: 1.8rem;
+        }
+
+        .student-info {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+            background-color: #eef4f9;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-group label {
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 3px;
+        }
+
+        .input-group input {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 0.95rem;
+        }
+
+        .section-title {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-size: 1.1rem;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+
+        .question-card {
+            background-color: #fff;
+            border: 1px solid #e1e8ed;
+            border-radius: 8px;
+            padding: 15px 20px;
+            margin-bottom: 15px;
+        }
+
+        .question-text {
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .reading-box {
+            background-color: #f9f9f9;
+            border-left: 4px solid var(--secondary-color);
+            padding: 12px 15px;
+            margin-bottom: 15px;
+            font-style: italic;
+            font-size: 0.95rem;
+        }
+
+        .options label {
+            display: block;
+            padding: 8px 12px;
+            margin: 5px 0;
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .options label:hover {
+            background-color: #e8f4fe;
+        }
+
+        .options input[type="radio"] {
+            margin-right: 10px;
+        }
+
+        .open-answer {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-top: 8px;
+            font-size: 0.95rem;
+            box-sizing: border-box;
+        }
+
+        .btn-submit {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 30px;
+            transition: background 0.3s;
+        }
+
+        .btn-submit:hover {
+            background-color: #1a3c5e;
+        }
+
+        #result-modal {
+            display: none;
+            margin-top: 30px;
+            padding: 25px;
+            background-color: #eef9f1;
+            border: 2px solid var(--correct-color);
+            border-radius: var(--border-radius);
+            text-align: center;
+        }
+
+        #result-modal h2 {
+            color: var(--correct-color);
+            margin-top: 0;
+        }
+
+        .score-big {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin: 10px 0;
+        }
+
+        .breakdown {
+            text-align: left;
+            margin-top: 15px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .breakdown-item {
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        @media (max-width: 600px) {
+            .student-info { grid-template-columns: 1fr; }
+            .breakdown { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>📝 Evaluación Diagnóstica — 6.º de Primaria</h1>
+        <p>Responde cada una de las preguntas de manera individual.</p>
+    </header>
+
+    <div class="student-info">
+        <div class="input-group">
+            <label for="student-name">Nombre del Alumno/a:</label>
+            <input type="text" id="student-name" placeholder="Escribe tu nombre completo">
+        </div>
+        <div class="input-group">
+            <label for="student-date">Fecha:</label>
+            <input type="date" id="student-date">
+        </div>
+        <div class="input-group">
+            <label for="student-group">Grupo:</label>
+            <input type="text" id="student-group" placeholder="Ej: 6° A">
+        </div>
+    </div>
+
+    <form id="quiz-form">
+        <!-- LENGUA MATERNA -->
+        <div class="section-title">I. Lengua Materna (Español)</div>
+
+        <div class="reading-box">
+            <strong>Lectura:</strong> "El ajolote mexicano es un anfibio extraordinario endémico de la cuenca del Valle de México. Posee la capacidad única de regenerar miembros amputados y órganos vitales. Sin embargo, actualmente se encuentra en peligro crítico de extinción debido a la contaminación de los canales de Xochimilco y la introducción de especies invasoras."
+        </div>
+
+        <div class="question-card">
+            <div class="question-text">1. ¿Cuál es la idea principal del texto anterior?</div>
+            <div class="options">
+                <label><input type="radio" name="p1" value="a"> a) Describir cómo nadan las especies invasoras en Xochimilco.</label>
+                <label><input type="radio" name="p1" value="b"> b) Informar sobre las características del ajolote y la amenaza de su extinción.</label>
+                <label><input type="radio" name="p1" value="c"> c) Explicar la historia antigua de la cuenca del Valle de México.</label>
+                <label><input type="radio" name="p1" value="d"> d) Enseñar cómo cuidar a los anfibios en casa.</label>
+            </div>
+        </div>
+
+        <div class="question-card">
+            <div class="question-text">2. ¿Qué tipo de texto es el anterior?</div>
+            <div class="options">
+                <label><input type="radio" name="p2" value="a"> a) Narrativo (cuento)</label>
+                <label><input type="radio" name="p2" value="b"> b) Expositivo / Informativo</label>
+                <label><input type="radio" name="p2" value="c"> c) Instructivo (receta)</label>
+            </div>
+        </div>
+
+        <div class="question-card">
+            <div class="question-text">3. Identifica la palabra que requiere tilde por ser esdrújula:</div>
+            <div class="options">
+                <label><input type="radio" name="p3" value="a"> a) Cancion</label>
+                <label><input type="radio" name="p3" value="b"> b) Pajaro</label>
+                <label><input type="radio" name="p3" value="c"> c) Arbol</label>
+                <label><input type="radio" name="p3" value="d"> d) Pared</label>
+            </div>
+        </div>
+
+        <!-- MATEMÁTICAS -->
+        <div class="section-title">II. Matemáticas</div>
+
+        <div class="question-card">
+            <div class="question-text">4. Resuelve la siguiente multiplicación: 3,485 × 24</div>
+            <input type="number" name="p4" class="open-answer" placeholder="Escribe el resultado numérico">
+        </div>
+
+        <div class="question-card">
+            <div class="question-text">5. María compró 1.5 kg de manzanas y 2.25 kg de peras. Si la bolsa vacía pesa 0.1 kg, ¿cuál es el peso total (en kg) que lleva en la mano?</div>
+            <input type="number" step="0.01" name="p5" class="open-answer" placeholder="Ejemplo: 3.85">
+        </div>
+
+        <div class="question-card">
+            <div class="question-text">6. ¿Cuál es el área de un terreno rectangular que mide 12 metros de largo y 5 metros de ancho?</div>
+            <div class="options">
+                <label><input type="radio" name="p6" value="a"> a) 34 m²</label>
+                <label><input type="radio" name="p6" value="b"> b) 60 m²</label>
+                <label><input type="radio" name="p6" value="c"> c) 17 m²</label>
+                <label><input type="radio" name="p6" value="d"> d) 50 m²</label>
+            </div>
+        </div>
+
+        <!-- CIENCIAS NATURALES -->
+        <div class="section-title">III. Ciencias Naturales</div>
+
+        <div class="question-card">
+            <div class="question-text">7. ¿Qué sistema del cuerpo humano se encarga de transportar el oxígeno y los nutrientes a través de la sangre?</div>
+            <div class="options">
+                <label><input type="radio" name="p7" value="a"> a) Sistema Digestivo</label>
+                <label><input type="radio" name="p7" value="b"> b) Sistema Circulatorio</label>
+                <label><input type="radio" name="p7" value="c"> c) Sistema Nervioso</label>
+            </div>
+        </div>
+
+        <div class="question-card">
+            <div class="question-text">8. El agua, la luz solar, la temperatura y el suelo en un ecosistema corresponden a:</div>
+            <div class="options">
+                <label><input type="radio" name="p8" value="a"> a) Factores Bióticos</label>
+                <label><input type="radio" name="p8" value="b"> b) Factores Abióticos</label>
+                <label><input type="radio" name="p8" value="c"> c) Factores Artificiales</label>
+            </div>
+        </div>
+
+        <!-- HISTORIA Y GEOGRAFÍA -->
+        <div class="section-title">IV. Historia y Geografía</div>
+
+        <div class="question-card">
+            <div class="question-text">9. ¿Cómo se llaman las líneas imaginarias horizontales que dividen la Tierra y miden la latitud (como el Ecuador)?</div>
+            <div class="options">
+                <label><input type="radio" name="p9" value="a"> a) Meridianos</label>
+                <label><input type="radio" name="p9" value="b"> b) Paralelos</label>
+                <label><input type="radio" name="p9" value="c"> c) Polos</label>
+            </div>
+        </div>
+
+        <div class="question-card">
+            <div class="question-text">10. ¿Cuál fue una de las principales causas que impulsó el inicio de la Revolución Mexicana en 1910?</div>
+            <div class="options">
+                <label><input type="radio" name="p10" value="a"> a) El descontento social ante la larga dictadura de Porfirio Díaz.</label>
+                <label><input type="radio" name="p10" value="b"> b) La llegada de Cristóbal Colón a América.</label>
+                <label><input type="radio" name="p10" value="c"> c) La firma del Tratado de Libre Comercio.</label>
+            </div>
+        </div>
+
+        <button type="button" class="btn-submit" onclick="calcularCalificacion()">Calcular Resultados</button>
+    </form>
+
+    <div id="result-modal">
+        <h2>Resultados de la Evaluación</h2>
+        <p id="student-summary"></p>
+        <div class="score-big" id="score-display">0 / 10</div>
+        <p id="feedback-message"></p>
+        
+        <div class="breakdown">
+            <div class="breakdown-item"><strong>Español:</strong> <span id="score-esp">0</span>/3</div>
+            <div class="breakdown-item"><strong>Matemáticas:</strong> <span id="score-mat">0</span>/3</div>
+            <div class="breakdown-item"><strong>Ciencias:</strong> <span id="score-cie">0</span>/2</div>
+            <div class="breakdown-item"><strong>Hist. y Geo.:</strong> <span id="score-soc">0</span>/2</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function calcularCalificacion() {
+        const respuestasCorrectas = {
+            p1: "b", p2: "b", p3: "b",
+            p4: 83640, p5: 3.85, p6: "b",
+            p7: "b", p8: "b",
+            p9: "b", p10: "a"
+        };
+
+        let puntos = 0, puntosEsp = 0, puntosMat = 0, puntosCie = 0, puntosSoc = 0;
+        const form = document.getElementById('quiz-form');
+
+        // Evaluación por materia
+        if (form.p1.value === respuestasCorrectas.p1) { puntos++; puntosEsp++; }
+        if (form.p2.value === respuestasCorrectas.p2) { puntos++; puntosEsp++; }
+        if (form.p3.value === respuestasCorrectas.p3) { puntos++; puntosEsp++; }
+
+        if (parseInt(form.p4.value) === respuestasCorrectas.p4) { puntos++; puntosMat++; }
+        if (parseFloat(form.p5.value) === respuestasCorrectas.p5) { puntos++; puntosMat++; }
+        if (form.p6.value === respuestasCorrectas.p6) { puntos++; puntosMat++; }
+
+        if (form.p7.value === respuestasCorrectas.p7) { puntos++; puntosCie++; }
+        if (form.p8.value === respuestasCorrectas.p8) { puntos++; puntosCie++; }
+
+        if (form.p9.value === respuestasCorrectas.p9) { puntos++; puntosSoc++; }
+        if (form.p10.value === respuestasCorrectas.p10) { puntos++; puntosSoc++; }
+
+        const nombre = document.getElementById('student-name').value || 'Estudiante';
+        const grupo = document.getElementById('student-group').value || '';
+
+        document.getElementById('student-summary').innerText = `Alumno: ${nombre} ${grupo ? '(' + grupo + ')' : ''}`;
+        document.getElementById('score-display').innerText = `${puntos} / 10`;
+        
+        document.getElementById('score-esp').innerText = puntosEsp;
+        document.getElementById('score-mat').innerText = puntosMat;
+        document.getElementById('score-cie').innerText = puntosCie;
+        document.getElementById('score-soc').innerText = puntosSoc;
+
+        let mensaje = "";
+        if (puntos === 10) {
+            mensaje = "¡Excelente desempeño! Has demostrado un dominio completo de los temas.";
+        } else if (puntos >= 7) {
+            mensaje = "¡Buen trabajo! Has aprobado la evaluación; repasa los temas pendientes.";
+        } else {
+            mensaje = "Se recomienda reforzar las áreas de oportunidad identificadas.";
+        }
+        document.getElementById('feedback-message').innerText = mensaje;
+
+        const modal = document.getElementById('result-modal');
+        modal.style.display = 'block';
+        modal.scrollIntoView({ behavior: 'smooth' });
+    }
+</script>
+
+</body>
+</html>
