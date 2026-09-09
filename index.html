@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evaluación Diagnóstica Tipo PISA - 1° de Secundaria</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent: #e74c3c;
+            --success: #2ecc71;
+            --bg: #f4f7f6;
+            --card-bg: #ffffff;
+            --text: #333333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        header {
+            text-align: center;
+            border-bottom: 3px solid var(--secondary);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+
+        .student-info {
+            background: #eef2f5;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .student-info input {
+            flex: 1;
+            min-width: 200px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .case-study {
+            background: #e8f4f8;
+            border-left: 5px solid var(--secondary);
+            padding: 18px;
+            border-radius: 0 8px 8px 0;
+            margin: 25px 0 15px 0;
+        }
+
+        .case-title {
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+        }
+
+        .question-card {
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 18px;
+            margin-bottom: 20px;
+            transition: all 0.2s ease;
+        }
+
+        .question-title {
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--primary);
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .option-label {
+            display: flex;
+            align-items: center;
+            padding: 10px 12px;
+            background: #fafafa;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .option-label:hover {
+            background: #f0f7ff;
+        }
+
+        .option-label input {
+            margin-right: 12px;
+        }
+
+        .btn-submit {
+            display: block;
+            width: 100%;
+            background: var(--secondary);
+            color: white;
+            font-size: 1.2rem;
+            font-weight: bold;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 30px;
+            transition: background 0.3s;
+        }
+
+        .btn-submit:hover {
+            background: #2980b9;
+        }
+
+        #result-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .result-content {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        }
+
+        .score-display {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--secondary);
+            margin: 15px 0;
+        }
+
+        .area-score {
+            text-align: left;
+            margin: 15px 0;
+            background: #f8f9fa;
+            padding: 10px 15px;
+            border-radius: 6px;
+        }
+
+        .btn-close {
+            background: var(--primary);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Evaluación Diagnóstica de Competencias (Tipo PISA)</h1>
+        <p>1.º de Secundaria — Comprensión Lectora, Matemáticas y Ciencias</p>
+    </header>
+
+    <div class="student-info">
+        <input type="text" id="student-name" placeholder="Nombre completo del alumno" required>
+        <input type="text" id="student-group" placeholder="Grupo / Módulo" required>
+    </div>
+
+    <form id="pisa-exam">
+        <!-- SECCIÓN 1: COMPRENSIÓN LECTORA -->
+        <h2>Sección I: Comprensión Lectora (Reactivos 1 - 20)</h2>
+
+        <!-- Caso L1 -->
+        <div class="case-study">
+            <div class="case-title">Texto 1: El uso de redes sociales en adolescentes</div>
+            <p>Un estudio reciente mostró que el 78% de los jóvenes de 12 a 15 años pasa más de 3 horas diarias en redes sociales. Mientras que algunos psicólogos afirman que fomenta la conexión social y el desarrollo de habilidades digitales, otros advierten sobre los riesgos en la atención escolar, la falta de sueño y la exposición a desinformación.</p>
+        </div>
+
+        <div class="question-card" data-correct="B">
+            <div class="question-title">1. ¿Cuál es el propósito principal del texto anterior?</div>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q1" value="A"> Prohibir el uso de redes sociales en escuelas.</label>
+                <label class="option-label"><input type="radio" name="q1" value="B"> Presentar posturas diversas sobre el impacto del uso de redes sociales.</label>
+                <label class="option-label"><input type="radio" name="q1" value="C"> Demostrar que todos los jóvenes tienen problemas de atención.</label>
+                <label class="option-label"><input type="radio" name="q1" value="D"> Enseñar a los jóvenes cómo crear una cuenta en redes sociales.</label>
+            </div>
+        </div>
+
+        <div class="question-card" data-correct="C">
+            <div class="question-title">2. A partir del texto, ¿qué inferencia es correcta respecto a los hábitos de los adolescentes?</div>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q2" value="A"> Todos los jóvenes sufren de insomnio por usar redes.</label>
+                <label class="option-label"><input type="radio" name="q2" value="B"> Las redes sociales no aportan ningún beneficio a los estudiantes.</label>
+                <label class="option-label"><input type="radio" name="q2" value="C"> Una parte significativa del tiempo libre de los jóvenes se dedica al entorno digital.</label>
+                <label class="option-label"><input type="radio" name="q2" value="D"> Los psicólogos recomiendan eliminar el internet en casa.</label>
+            </div>
+        </div>
+
+        <!-- Caso L2 -->
+        <div class="case-study">
+            <div class="case-title">Texto 2: Aviso Escolar - Huerto Comunitario</div>
+            <p><strong>A toda la comunidad escolar:</strong> Este viernes inicia el proyecto 'Huerto Comunitario'. Se solicita a los alumnos de 1° de secundaria traer botellas de plástico recicladas de 2 litros y una pequeña pala de jardín. Las actividades se realizarán durante la hora de biología. Los productos cosechados se destinarán al comedor escolar.</p>
+        </div>
+
+        <div class="question-card" data-correct="C">
+            <div class="question-title">3. ¿Qué material específico deben aportar los alumnos de 1° de secundaria?</div>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q3" value="A"> Semillas y fertilizante orgánico.</label>
+                <label class="option-label"><input type="radio" name="q3" value="B"> Macetas de cerámica y tierra de hoja.</label>
+                <label class="option-label"><input type="radio" name="q3" value="C"> Botellas de plástico de 2L y una pala pequeña de jardín.</label>
+                <label class="option-label"><input type="radio" name="q3" value="D"> Alimentos procesados para el comedor.</label>
+            </div>
+        </div>
+
+        <div class="question-card" data-correct="A">
+            <div class="question-title">4. ¿Cuál es el destino final de las hortalizas que se produzcan en el huerto?</div>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q4" value="A"> El comedor escolar.</label>
+                <label class="option-label"><input type="radio" name="q4" value="B"> Venderlas en el mercado local.</label>
+                <label class="option-label"><input type="radio" name="q4" value="C"> Regalarlas a los profesores.</label>
+                <label class="option-label"><input type="radio" name="q4" value="D"> Llevárselas a casa cada fin de semana.</label>
+            </div>
+        </div>
+
+        <!-- Continuación de preguntas para llegar a 60 -->
+        <!-- Generando patrón estructurado de reactivos para las tres secciones -->
+
+        <!-- Q5 a Q20 (Lectura) -->
+        <div class="case-study">
+            <div class="case-title">Texto 3: Infografía sobre el Consumo de Agua</div>
+            <p>Duchar en 5 minutos consume aprox. 80 litros de agua. Lavar el auto con manguera gasta hasta 500 litros, mientras que usar una cubeta solo gasta 30 litros. Un grifo goteando pierde hasta 30 litros al día.</p>
+        </div>
+
+        <div class="question-card" data-correct="B">
+            <div class="question-title">5. ¿Cuánta agua se ahorra al lavar un auto con cubeta en vez de usar manguera?</div>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q5" value="A"> 30 litros.</label>
+                <label class="option-label"><input type="radio" name="q5" value="B"> 470 litros.</label>
+                <label class="option-label"><input type="radio" name="q5" value="C"> 500 litros.</label>
+                <label class="option-label"><input type="radio" name="q5" value="D"> 80 litros.</label>
+            </div>
+        </div>
+
+        <div class="question-card" data-correct="D">
+            <div class="question-title">6. ¿Qué acción diaria representa una pérdida continua e inadvertida según el texto?</div>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q6" value="A"> Lavar el auto con cubeta.</label>
+                <label class="option-label"><input type="radio" name="q6" value="B"> Bañarse en 5 minutos.</label>
+                <label class="option-label"><input type="radio" name="q6" value="C"> Usar regadera ecológica.</label>
+                <label class="option-label"><input type="radio" name="q6" value="D"> Un grifo con fuga de goteo.</label>
+            </div>
+        </div>
+
+        <!-- Reactivos adicionales de Lectura sintetizados -->
+        <div class="question-card" data-correct="A"><div class="question-title">7. En un artículo de divulgación científica, ¿cuál es la función de los subtítulos?</div><div class="options"><label class="option-label"><input type="radio" name="q7" value="A"> Organizar la información por temas o secciones.</label><label class="option-label"><input type="radio" name="q7" value="B"> Adornar el texto visualmente.</label><label class="option-label"><input type="radio" name="q7" value="C"> Resumir todo el artículo en una frase.</label><label class="option-label"><input type="radio" name="q7" value="D"> Indicar quién es el autor del texto.</label></div></div>
+        
+        <div class="question-card" data-correct="C"><div class="question-title">8. Distingue la afirmación que expresa una OPINIÓN y no un hecho comprobable:</div><div class="options"><label class="option-label"><input type="radio" name="q8" value="A"> El agua hierve a 100 °C al nivel del mar.</label><label class="option-label"><input type="radio" name="q8" value="B"> La Tierra tarda 365 días en dar una vuelta al Sol.</label><label class="option-label"><input type="radio" name="q8" value="C"> La clase de historia es la más interesante de la secundaria.</label><label class="option-label"><input type="radio" name="q8" value="D"> La célula es la unidad básica de la vida.</label></div></div>
+
+        <div class="question-card" data-correct="B"><div class="question-title">9. Si lees un instructivo y no comprendes un paso técnico, ¿qué estrategia de lectura es más efectiva?</div><div class="options"><label class="option-label"><input type="radio" name="q9" value="A"> Ignorar ese paso y saltar al final.</label><label class="option-label"><input type="radio" name="q9" value="B"> Releer el contexto previo y consultar el glosario o diccionario.</label><label class="option-label"><input type="radio" name="q9" value="C"> Inventar un procedimiento propio.</label><label class="option-label"><input type="radio" name="q9" value="D"> Cerrar el documento inmediatamente.</label></div></div>
+
+        <div class="question-card" data-correct="A"><div class="question-title">10. ¿Qué conector indica una consecuencia lógica en un texto argumentativo?</div><div class="options"><label class="option-label"><input type="radio" name="q10" value="A"> Por lo tanto</label><label class="option-label"><input type="radio" name="q10" value="B"> Sin embargo</label><label class="option-label"><input type="radio" name="q10" value="C"> Aunque</label><label class="option-label"><input type="radio" name="q10" value="D"> O bien</label></div></div>
+
+        <div class="question-card" data-correct="C"><div class="question-title">11. Un texto sobre reciclaje concluye: "Pequeños cambios diarios crean grandes transformaciones globales". ¿Qué mensaje busca transmitir?</div><div class="options"><label class="option-label"><input type="radio" name="q11" value="A"> Que reciclar no sirve de nada a escala mundial.</label><label class="option-label"><input type="radio" name="q11" value="B"> Que solo las grandes industrias deben cambiar.</label><label class="option-label"><input type="radio" name="q11" value="C"> Que las acciones individuales acumuladas tienen un gran impacto positivo.</label><label class="option-label"><input type="radio" name="q11" value="D"> Que el reciclaje es costoso e ineficiente.</label></div></div>
+
+        <div class="question-card" data-correct="D"><div class="question-title">12. En una gráfica de pastel sobre la dieta escolar, la rebanada más grande corresponde al 55% e indica "Carbohidratos". ¿Qué interpretación es acertada?</div><div class="options"><label class="option-label"><input type="radio" name="q12" value="A"> Que no se consumen carbohidratos.</label><label class="option-label"><input type="radio" name="q12" value="B"> Que la mitad de la dieta son proteínas.</label><label class="option-label"><input type="radio" name="q12" value="C"> Que el 55% de los alumnos no come en la escuela.</label><label class="option-label"><input type="radio" name="q12" value="D"> Que más de la mitad de la dieta está compuesta por carbohidratos.</label></div></div>
+
+        <div class="question-card" data-correct="B"><div class="question-title">13. ¿Cuál es la intención principal de un cartel publicitario con el lema: "¡No dejes que el dengue entre a tu hogar!"?</div><div class="options"><label class="option-label"><input type="radio" name="q13" value="A"> Vender un insecticida de marca comercial.</label><label class="option-label"><input type="radio" name="q13" value="B"> Persuadir a la población para tomar medidas preventivas de salud.</label><label class="option-label"><input type="radio" name="q13" value="C"> Informar sobre la historia biológica del mosquito.</label><label class="option-label"><input type="radio" name="q13" value="D"> Invitar a un concurso de dibujo sobre mosquitos.</label></div></div>
+
+        <div class="question-card" data-correct="A"><div class="question-title">14. Al comparar un artículo periodístico y un poema sobre el mar, ¿en qué se diferencian principalmente?</div><div class="options"><label class="option-label"><input type="radio" name="q14" value="A"> El primero busca informar objetivamente y el segundo expresar emociones.</label><label class="option-label"><input type="radio" name="q14" value="B"> El poema utiliza datos estadísticos exactos.</label><label class="option-label"><input type="radio" name="q14" value="C"> La noticia siempre está escrita en rima.</label><label class="option-label"><input type="radio" name="q14" value="D"> Ambos comparten la misma estructura gramatical exacta.</label></div></div>
+
+        <div class="question-card" data-correct="C"><div class="question-title">15. ¿Qué significa la palabra "biodegradable" en un contexto de cuidado ambiental?</div><div class="options"><label class="option-label"><input type="radio" name="q15" value="A"> Que nunca se destruye con el tiempo.</label><label class="option-label"><input type="radio" name="q15" value="B"> Que es sumamente tóxico para los animales.</label><label class="option-label"><input type="radio" name="q15" value="C"> Que puede descomponerse de forma natural por acción biológica.</label><label class="option-label"><input type="radio" name="q15" value="D"> Que está hecho 100% de plástico sintético.</label></div></div>
+
+        <div class="question-card" data-correct="B"><div class="question-title">16. Si en un cuento el narrador conoce todos los pensamientos y sentimientos de los personajes, se trata de un narrador:</div><div class="options"><label class="option-label"><input type="radio" name="q16" value="A"> Testigo.</label><label class="option-label"><input type="radio" name="q16" value="B"> Omnisciente.</label><label class="option-label"><input type="radio" name="q16" value="C"> Protagonista.</label><label class="option-label"><input type="radio" name="q16" value="D"> Secundario.</label></div></div>
+
+        <div class="question-card" data-correct="D"><div class="question-title">17. ¿Qué elemento gráfico permite comprender mejor la secuencia cronológica de un hecho histórico?</div><div class="options"><label class="option-label"><input type="radio" name="q17" value="A"> Un diagrama de pastel.</label><label class="option-label"><input type="radio" name="q17" value="B"> Un mapa conceptual.</label><label class="option-label"><input type="radio" name="q17" value="C"> Un cuadro de doble entrada.</label><label class="option-label"><input type="radio" name="q17" value="D"> Una línea del tiempo.</label></div></div>
+
+        <div class="question-card" data-correct="A"><div class="question-title">18. En el enunciado "A pesar del intenso frío, los alumnos concluyeron la reforestación", la frase "A pesar de" indica:</div><div class="options"><label class="option-label"><input type="radio" name="q18" value="A"> Oposición o concesión.</label><label class="option-label"><input type="radio" name="q18" value="B"> Causa directa.</label><label class="option-label"><input type="radio" name="q18" value="C"> Comparación de igualdad.</label><label class="option-label"><input type="radio" name="q18" value="D"> Condición indispensable.</label></div></div>
+
+        <div class="question-card" data-correct="C"><div class="question-title">19. ¿Cuál es el sesgo en una nota que afirma: "Nuestra marca es la única opción inteligente del mercado"?</div><div class="options"><label class="option-label"><input type="radio" name="q19" value="A"> Es una afirmación objetiva respaldada por la ciencia.</label><label class="option-label"><input type="radio" name="q19" value="B"> Es una ley universal de consumo.</label><label class="option-label"><input type="radio" name="q19" value="C"> Es un lenguaje publicitario persuasivo y subjetivo.</label><label class="option-label"><input type="radio" name="q19" value="D"> Es un dato estadístico comprobado.</label></div></div>
+
+        <div class="question-card" data-correct="B"><div class="question-title">20. Para resumir una monografía científica sin perder la idea global, ¿qué paso es fundamental?</div><div class="options"><label class="option-label"><input type="radio" name="q20" value="A"> Copiar textualmente solo el primer párrafo.</label><label class="option-label"><input type="radio" name="q20" value="B"> Identificar las ideas principales de cada sección y redactarlas con tus palabras.</label><label class="option-label"><input type="radio" name="q20" value="C"> Eliminar todas las imágenes y gráficas del documento.</label><label class="option-label"><input type="radio" name="q20" value="D"> Cambiar el título por uno más divertido.</label></div></div>
+
+
+        <!-- SECCIÓN 2: MATEMÁTICAS -->
+        <h2>Sección II: Competencia Matemática (Reactivos 21 - 40)</h2>
+
+        <div class="case-study">
+            <div class="case-title">Caso M1: Descuentos en la papelería escolar</div>
+            <p>Una mochila cuesta $450 pesos. Por inicio de curso, la tienda ofrece un descuento del 20%. Adicionalmente, si el pago es en efectivo, se descuenta un 5% extra sobre el precio ya rebajado.</p>
+        </div>
+
+        <div class="question-card" data-correct="B">
+            <div class="question-title">21. ¿Cuál es el precio de la mochila aplicando únicamente el primer descuento del 20%?</div>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q21" value="A"> $430 pesos</label>
+                <label class="option-label"><input type="radio" name="q21" value="B"> $360 pesos</label>
+                <label class="option-label"><input type="radio" name="q21" value="C"> $390 pesos</label>
+                <label class="option-label"><input type="radio" name="q21" value="D"> $350 pesos</label>
+            </div>
+        </div>
+
+        <div class="question-card" data-correct="C">
+            <div class="question-title">22. Si un cliente paga la mochila en efectivo, ¿cuánto paga en total al final?</div>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q22" value="A"> $337.50 pesos</label>
+                <label class="option-label"><input type="radio" name="q22" value="B"> $340.00 pesos</label>
+                <label class="option-label"><input type="radio" name="q22" value="C"> $342.00 pesos</label>
+                <label class="option-label"><input type="radio" name="q22" value="D"> $335.00 pesos</label>
+            </div>
+        </div>
+
+        <div class="question-card" data-correct="A">
+            <div class="question-title">23. Una receta para 4 personas utiliza 3/4 kg de harina. ¿Cuánta harina se necesita para cocinar la misma receta para 8 personas?</div>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q23" value="A"> 1.5 kg (1 y 1/2 kg)</label>
+                <label class="option-label"><input type="radio" name="q23" value="B"> 1.2 kg</label>
+                <label class="option-label"><input type="radio" name="q23" value="C"> 2 kg</label>
+                <label class="option-label"><input type="radio" name="q23" value="D"> 6/8 kg</label>
+            </div>
+        </div>
+
+        <div class="question-card" data-correct="D">
+            <div class="question-title">24. Observa la siguiente sucesión numérica: 4, 9, 14, 19, 24... ¿Cuál es la regla algebraica del término 'n'?</div>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q24" value="A"> 4n + 1</label>
+                <label class="option-label"><input type="radio" name="q24" value="B"> 2n + 2</label>
+                <label class="option-label"><input type="radio" name="q24" value="C"> 5n + 1</label>
+                <label class="option-label"><input type="radio" name="q24" value="D"> 5n - 1</label>
+            </div>
+        </div>
+
+        <div class="question-card" data-correct="C">
+            <div class="question-title">25. Un terreno rectangular mide 12 metros de largo y 8 metros de ancho. Si se quiere cercar con 3 hilos de alambre, ¿cuántos metros de alambre se ocupan?</div>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q25" value="A"> 40 metros</label>
+                <label class="option-label"><input type="radio" name="q25" value="B"> 96 metros</label>
+                <label class="option-label"><input type="radio" name="q25" value="C"> 120 metros</label>
+                <label class="option-label"><input type="radio" name="q25" value="D"> 160 metros</label>
+            </div>
+        </div>
+
+        <div class="question-card" data-correct="B">
+            <div class="question-title">26. En una maqueta a escala 1:100, un edificio mide 25 cm de altura. ¿Cuál es la altura real del edificio en metros?</div>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q26" value="A"> 2.5 metros</label>
+                <label class="option-label"><input type="radio" name="q26" value="B"> 25 metros</label>
+                <label class="option-label"><input type="radio" name="q26" value="C"> 250 metros</label>
+                <label class="option-label"><input type="radio" name="q26" value="D"> 0.25 metros</label>
+            </div>
+        </div>
+
+        <div class="question-card" data-correct="A">
+            <div class="question-title">27. En un examen de 50 preguntas, Sofía obtuvo el 84% de aciertos. ¿Cuántas preguntas respondió correctamente?</div>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q27" value="A"> 42 preguntas</label>
+                <label class="option-label"><input type="radio" name="q27" value="B"> 40 preguntas</label>
+                <label class="option-label"><input type="radio" name="q27" value="C"> 44 preguntas</label>
+                <label class="option-label"><input type="radio" name="q27" value="D"> 38 preguntas</label>
+            </div>
+        </div>
+
+        <div class="question-card" data-correct="D">
+            <div class="question-title">28. Las calificaciones de Luis en el primer periodo fueron: 8, 9, 7, 10, 8. ¿Cuál es su promedio (media aritmética)?</div>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q28" value="A"> 8.0</label>
+                <label class="option-label"><input type="radio" name="q28" value="B"> 8.2</label>
+                <label class="option-label"><input type="radio" name="q28" value="C"> 8.5</label>
+                <label class="option-label"><input type="radio" name="q28" value="D"> 8.4</label>
+            </div>
+        </div>
+
+        <div class="question-card" data-correct="C">
+            <div class="question-title">29. En una urna hay 5 canicas rojas, 3 azules y 2 verdes. ¿Cuál es la probabilidad de sacar una canica azul al azar?</div>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q29" value="A"> 5/10 (50%)</label>
+                <label class="option-label"><input type="radio" name="q29" value="B"> 2/10 (20%)</label>
+                <label class="option-label"><input type="radio" name="q29" value="C"> 3/10 (30%)</label>
+                <label class="option-label"><input type="radio" name="q29" value="D"> 1/3 (33%)</label>
+            </div>
+        </div>
+
+        <div class="question-card" data-correct="B">
+            <div class="question-title">30. Si 3 impresoras tardan 20 minutos en imprimir un lote de exámenes, ¿cuánto tardarán 6 impresoras con la misma velocidad?</div>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q30" value="A"> 40 minutos</label>
+                <label class="option-label"><input type="radio" name="q30" value="B"> 10 minutos</label>
+                <label class="option-label"><input type="radio" name="q30" value="C"> 15 minutos</label>
+                <label class="option-label"><input type="radio" name="q30" value="D"> 5 minutos</label>
+            </div>
+        </div>
+
+        <div class="question-card" data-correct="A"><div class="question-title">31. ¿Cuál es el resultado de resolver la siguiente operación: 15 + 5 × 2 - 8?</div><div class="options"><label class="option-label"><input type="radio" name="q31" value="A"> 17</label><label class="option-label"><input type="radio" name="q31" value="B"> 32</label><label class="option-label"><input type="radio" name="q31" value="C"> 24</label><label class="option-label"><input type="radio" name="q31" value="D"> 12</label></div></div>
+
+        <div class="question-card" data-correct="D"><div class="question-title">32. Un contenedor de agua en forma de cubo mide 1.5 metros por lado. ¿Cuál es su volumen en metros cúbicos?</div><div class="options"><label class="option-label"><input type="radio" name="q32" value="A"> 4.5 m³</label><label class="option-label"><input type="radio" name="q32" value="B"> 2.25 m³</label><label class="option-label"><input type="radio" name="q32" value="C"> 6.0 m³</label><label class="option-label"><input type="radio" name="q32" value="D"> 3.375 m³</label></div></div>
+
+        <div class="question-card" data-correct="C"><div class="question-title">33. ¿Cuál de los siguientes números es primo?</div><div class="options"><label class="option-label"><input type="radio" name="q33" value="A"> 15</label><label class="option-label"><input type="radio" name="q33" value="B"> 21</label><label class="option-label"><input type="radio" name="q33" value="C"> 29</label><label class="option-label"><input type="radio" name="q33" value="D"> 35</label></div></div>
+
+        <div class="question-card" data-correct="B"><div class="question-title">34. Si el ángulo interior de una esquina plana mide 90°, ¿cómo se clasifica dicho ángulo?</div><div class="options"><label class="option-label"><input type="radio" name="q34" value="A"> Agudo</label><label class="option-label"><input type="radio" name="q34" value="B"> Recto</label><label class="option-label"><input type="radio" name="q34" value="C"> Obtuso</label><label class="option-label"><input type="radio" name="q34" value="D"> Llano</label></div></div>
+
+        <div class="question-card" data-correct="A"><div class="question-title">35. Convierte la fracción 4/5 a número decimal:</div><div class="options"><label class="option-label"><input type="radio" name="q35" value="A"> 0.8</label><label class="option-label"><input type="radio" name="q35" value="B"> 0.45</label><label class="option-label"><input type="radio" name="q35" value="C"> 1.25</label><label class="option-label"><input type="radio" name="q35" value="D"> 0.75</label></div></div>
+
+        <div class="question-card" data-correct="C"><div class="question-title">36. Un avión vuela a una altitud de 8,500 metros sobre el nivel del mar y un submarino se encuentra a -150 metros. ¿Cuál es la diferencia de altura entre ambos?</div><div class="options"><label class="option-label"><input type="radio" name="q36" value="A"> 8,350 metros</label><label class="option-label"><input type="radio" name="q36" value="B"> 8,500 metros</label><label class="option-label"><input type="radio" name="q36" value="C"> 8,650 metros</label><label class="option-label"><input type="radio" name="q36" value="D"> 9,000 metros</label></div></div>
+
+        <div class="question-card" data-correct="D"><div class="question-title">37. En la ecuación 3x + 5 = 20, ¿cuál es el valor de 'x'?</div><div class="options"><label class="option-label"><input type="radio" name="q37" value="A"> x = 3</label><label class="option-label"><input type="radio" name="q37" value="B"> x = 4</label><label class="option-label"><input type="radio" name="q37" value="C"> x = 6</label><label class="option-label"><input type="radio" name="q37" value="D"> x = 5</label></div></div>
+
+        <div class="question-card" data-correct="B"><div class="question-title">38. Un ciclista recorre 45 km en 1.5 horas a velocidad constante. ¿Cuál es su velocidad media?</div><div class="options"><label class="option-label"><input type="radio" name="q38" value="A"> 25 km/h</label><label class="option-label"><input type="radio" name="q38" value="B"> 30 km/h</label><label class="option-label"><input type="radio" name="q38" value="C"> 35 km/h</label><label class="option-label"><input type="radio" name="q38" value="D"> 40 km/h</label></div></div>
+
+        <div class="question-card" data-correct="A"><div class="question-title">39. Un círculo tiene un radio de 5 cm. ¿Cuál es su área aproximada? (Considera π = 3.14)</div><div class="options"><label class="option-label"><input type="radio" name="q39" value="A"> 78.5 cm²</label><label class="option-label"><input type="radio" name="q39" value="B"> 31.4 cm²</label><label class="option-label"><input type="radio" name="q39" value="C"> 15.7 cm²</label><label class="option-label"><input type="radio" name="q39" value="D"> 25.0 cm²</label></div></div>
+
+        <div class="question-card" data-correct="C"><div class="question-title">40. Si en una tienda 2 cuadernos cuestan $36 pesos, ¿cuánto costarán 7 cuadernos del mismo tipo?</div><div class="options"><label class="option-label"><input type="radio" name="q40" value="A"> $108 pesos</label><label class="option-label"><input type="radio" name="q40" value="B"> $112 pesos</label><label class="option-label"><input type="radio" name="q40" value="C"> $126 pesos</label><label class="option-label"><input type="radio" name="q40" value="D"> $140 pesos</label></div></div>
+
+
+        <!-- SECCIÓN 3: CIENCIAS -->
+        <h2>Sección III: Competencia Científica (Reactivos 41 - 60)</h2>
+
+        <div class="case-study">
+            <div class="case-title">Caso C1: Experimento de Fotosíntesis y Luz</div>
+            <p>Un grupo de alumnos colocó dos plantas idénticas en dos recipientes sellados con agua suficiente. La Planta A se dejó al sol directo durante 5 días, mientras que la Planta B se colocó dentro de una caja de cartón totalmente oscura durante el mismo tiempo.</p>
+        </div>
+
+        <div class="question-card" data-correct="B">
+            <div class="question-title">41. ¿Cuál es la variable independiente en este experimento?</div>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q41" value="A"> La cantidad de agua administrada.</label>
+                <label class="option-label"><input type="radio" name="q41" value="B"> La presencia o ausencia de luz solar.</label>
+                <label class="option-label"><input type="radio" name="q41" value="C"> El tamaño del recipiente de vidrio.</label>
+                <label class="option-label"><input type="radio" name="q41" value="D"> El tipo de tierra vegetal.</label>
+            </div>
+        </div>
+
+        <div class="question-card" data-correct="C">
+            <div class="question-title">42. ¿Qué resultado es científicamente esperado al final del quinto día en la Planta B?</div>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q42" value="A"> La planta B floreció y duplicó su tamaño.</label>
+                <label class="option-label"><input type="radio" name="q42" value="B"> La planta B produjo una gran cantidad de oxígeno.</label>
+                <label class="option-label"><input type="radio" name="q42" value="C"> La planta B presenta hojas amarillentas por falta de clorofila y fotosíntesis.</label>
+                <label class="option-label"><input type="radio" name="q42" value="D"> No ocurre ningún cambio observable en ninguna planta.</label>
+            </div>
+        </div>
+
+        <div class="question-card" data-correct="A">
+            <div class="question-title">43. ¿Cuál es el organelo celular encargado de realizar la fotosíntesis en las plantas?</div>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q43" value="A"> Cloroplasto</label>
+                <label class="option-label"><input type="radio" name="q43" value="B"> Mitocondria</label>
+                <label class="option-label"><input type="radio" name="q43" value="C"> Núcleo</label>
+                <label class="option-label"><input type="radio" name="q43" value="D"> Ribosoma</label>
+            </div>
+        </div>
+
+        <div class="question-card" data-correct="D">
+            <div class="question-title">44. Cuando hirve agua en una olla y el vapor choca contra una tapa fría transformándose en gotas de agua líquida, ocurre el proceso de:</div>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q44" value="A"> Evaporación</label>
+                <label class="option-label"><input type="radio" name="q44" value="B"> Solidificación</label>
+                <label class="option-label"><input type="radio" name="q44" value="C"> Sublimación</label>
+                <label class="option-label"><input type="radio" name="q44" value="D"> Condensación</label>
+            </div>
+        </div>
+
+        <div class="question-card" data-correct="B">
+            <div class="question-title">45. En una cadena trófica (red alimentaria), ¿qué función cumplen los hongos y bacterias descomponedores?</div>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q45" value="A"> Captar directamente la luz solar para fabricar azúcar.</label>
+                <label class="option-label"><input type="radio" name="q45" value="B"> Transformar la materia orgánica muerta en nutrientes inorgánicos para el suelo.</label>
+                <label class="option-label"><input type="radio" name="q45" value="C"> Consumir herbívoros vivos para controlar su población.</label>
+                <label class="option-label"><input type="radio" name="q45" value="D"> Producir oxígeno gaseoso para los animales del bosque.</label>
+            </div>
+        </div>
+
+        <div class="question-card" data-correct="C">
+            <div class="question-title">46. ¿Qué tipo de energía se almacena en los alimentos y las baterías?</div>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q46" value="A"> Energía Eólica</label>
+                <label class="option-label"><input type="radio" name="q46" value="B"> Energía Térmica</label>
+                <label class="option-label"><input type="radio" name="q46" value="C"> Energía Química</label>
+                <label class="option-label"><input type="radio" name="q46" value="D"> Energía Nuclear</label>
+            </div>
+        </div>
+
+        <div class="question-card" data-correct="A">
+            <div class="question-title">47. ¿Cuál es la función principal de los glóbulos rojos en la sangre humana?</div>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q47" value="A"> Transportar oxígeno hacia las células del cuerpo.</label>
+                <label class="option-label"><input type="radio" name="q47" value="B"> Defender al cuerpo contra infecciones bacterianas.</label>
+                <label class="option-label"><input type="radio" name="q47" value="C"> Cicatrizar heridas coagulando la sangre.</label>
+                <label class="option-label"><input type="radio" name="q47" value="D"> Digerir los nutrientes absorbidos en el intestino.</label>
+            </div>
+        </div>
+
+        <div class="question-card" data-correct="D">
+            <div class="question-title">48. Un objeto de madera flota en el agua, mientras que una canica de hierro del mismo tamaño se hunde. Esto se debe a que:</div>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q48" value="A"> El agua rechaza la madera por su color.</label>
+                <label class="option-label"><input type="radio" name="q48" value="B"> El hierro es más caliente que la madera.</label>
+                <label class="option-label"><input type="radio" name="q48" value="C"> La madera no posee masa ni volumen.</label>
+                <label class="option-label"><input type="radio" name="q48" value="D"> La densidad del hierro es mayor que la densidad del agua.</label>
+            </div>
+        </div>
+
+        <div class="question-card" data-correct="B">
+            <div class="question-title">49. ¿Qué gas atmosférico absorben las plantas durante la fotosíntesis y cuál liberan como residuo beneficioso?</div>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q49" value="A"> Absorben Oxígeno y liberan Dióxido de carbono.</label>
+                <label class="option-label"><input type="radio" name="q49" value="B"> Absorben Dióxido de carbono y liberan Oxígeno.</label>
+                <label class="option-label"><input type="radio" name="q49" value="C"> Absorben Nitrógeno y liberan Metano.</label>
+                <label class="option-label"><input type="radio" name="q49" value="D"> Absorben Hidrógeno y liberan Oxígeno.</label>
+            </div>
+        </div>
+
+        <div class="question-card" data-correct="C">
+            <div class="question-title">50. ¿Cuál es una consecuencia directa del efecto invernadero acentuado por la contaminación?</div>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q50" value="A"> Disminución de los niveles del mar.</label>
+                <label class="option-label"><input type="radio" name="q50" value="B"> Enfriamiento acelerado de los polos.</label>
+                <label class="option-label"><input type="radio" name="q50" value="C"> Aumento de la temperatura media global de la Tierra.</label>
+                <label class="option-label"><input type="radio" name="q50" value="D"> Extinción del fenómeno de la gravedad.</label>
+            </div>
+        </div>
+
+        <div class="question-card" data-correct="A"><div class="question-title">51. ¿Qué sistema del cuerpo humano se encarga de filtrar la sangre y eliminar desechos a través de la orina?</div><div class="options"><label class="option-label"><input type="radio" name="q51" value="A"> Sistema Excretor (Renal)</label><label class="option-label"><input type="radio" name="q51" value="B"> Sistema Digestivo</label><label class="option-label"><input type="radio" name="q51" value="C"> Sistema Nervioso</label><label class="option-label"><input type="radio" name="q51" value="D"> Sistema Endocrino</label></div></div>
+
+        <div class="question-card" data-correct="D"><div class="question-title">52. ¿Qué fenómeno ocurre cuando la Luna se interpone exactamente entre el Sol y la Tierra?</div><div class="options"><label class="option-label"><input type="radio" name="q52" value="A"> Eclipse Lunar</label><label class="option-label"><input type="radio" name="q52" value="B"> Aurora Boreal</label><label class="option-label"><input type="radio" name="q52" value="C"> Solsticio de Verano</label><label class="option-label"><input type="radio" name="q52" value="D"> Eclipse Solar</label></div></div>
+
+        <div class="question-card" data-correct="B"><div class="question-title">53. ¿Cuál es el postulado fundamental de la Ley de Conservación de la Materia?</div><div class="options"><label class="option-label"><input type="radio" name="q53" value="A"> La materia siempre se multiplica con el calor.</label><label class="option-label"><input type="radio" name="q53" value="B"> La materia no se crea ni se destruye, solo se transforma.</label><label class="option-label"><input type="radio" name="q53" value="C"> Todo cuerpo en movimiento pierde masa rápidamente.</label><label class="option-label"><input type="radio" name="q53" value="D"> Los sólidos son más pesados que los gases siempre.</label></div></div>
+
+        <div class="question-card" data-correct="C"><div class="question-title">54. ¿Qué ventaja adaptativa tienen los cactus para sobrevivir en ambientes desérticos?</div><div class="options"><label class="option-label"><input type="radio" name="q54" value="A"> Hojas gigantes que absorben sombra.</label><label class="option-label"><input type="radio" name="q54" value="B"> Raíces superficiales sin capacidad de absorción.</label><label class="option-label"><input type="radio" name="q54" value="C"> Hojas modificadas en espinas para evitar la pérdida de agua por transpiración.</label><label class="option-label"><input type="radio" name="q54" value="D"> Falta total de tallo fotosintético.</label></div></div>
+
+        <div class="question-card" data-correct="A"><div class="question-title">55. ¿Cuál es la unidad básica, estructural y funcional de todos los seres vivos?</div><div class="options"><label class="option-label"><input type="radio" name="q55" value="A"> La célula</label><label class="option-label"><input type="radio" name="q55" value="B"> El tejido</label><label class="option-label"><input type="radio" name="q55" value="C"> El órgano</label><label class="option-label"><input type="radio" name="q55" value="D"> El átomo</label></div></div>
+
+        <div class="question-card" data-correct="D"><div class="question-title">56. Si frotas un globo contra tu cabello seco y este atrae pequeños trozos de papel, ¿qué fenómeno físico estás observando?</div><div class="options"><label class="option-label"><input type="radio" name="q56" value="A"> Magnetismo natural</label><label class="option-label"><input type="radio" name="q56" value="B"> Fuerza de gravedad</label><label class="option-label"><input type="radio" name="q56" value="C"> Conducción térmica</label><label class="option-label"><input type="radio" name="q56" value="D"> Electricidad estática (electrostática)</label></div></div>
+
+        <div class="question-card" data-correct="B"><div class="question-title">57. ¿Cuál es un ejemplo de cambio químico en la materia?</div><div class="options"><label class="option-label"><input type="radio" name="q57" value="A"> Cortar una hoja de papel en trozos pequeños.</label><label class="option-label"><input type="radio" name="q57" value="B"> La oxidación de un clavo de hierro al intemperie.</label><label class="option-label"><input type="radio" name="q57" value="C"> Derretir un cubo de hielo en un vaso de agua.</label><label class="option-label"><input type="radio" name="q57" value="D"> Disolver azúcar en una taza de café caliente.</label></div></div>
+
+        <div class="question-card" data-correct="C"><div class="question-title">58. ¿Qué estructura celular contiene la información genética (ADN) en las células eucariotas?</div><div class="options"><label class="option-label"><input type="radio" name="q58" value="A"> Citoplasma</label><label class="option-label"><input type="radio" name="q58" value="B"> Membrana celular</label><label class="option-label"><input type="radio" name="q58" value="C"> Núcleo celular</label><label class="option-label"><input type="radio" name="q58" value="D"> Vacuola</label></div></div>
+
+        <div class="question-card" data-correct="A"><div class="question-title">59. ¿Cuál es la principal fuente renovable de energía que impulsa el ciclo del agua en la Tierra?</div><div class="options"><label class="option-label"><input type="radio" name="q59" value="A"> El Sol</label><label class="option-label"><input type="radio" name="q59" value="B"> El viento</label><label class="option-label"><input type="radio" name="q59" value="C"> Las mareas del océano</label><label class="option-label"><input type="radio" name="q59" value="D"> El calor del centro de la Tierra</label></div></div>
+
+        <div class="question-card" data-correct="D"><div class="question-title">60. Un ecosistema se compone de factores bióticos y abióticos. ¿Cuál de las siguientes opciones contiene solo factores ABIÓTICOS?</div><div class="options"><label class="option-label"><input type="radio" name="q60" value="A"> Plantas, animales y bacterias.</label><label class="option-label"><input type="radio" name="q60" value="B"> Árboles, suelo y agua.</label><label class="option-label"><input type="radio" name="q60" value="C"> Peces, rocas y luz solar.</label><label class="option-label"><input type="radio" name="q60" value="D"> Luz solar, temperatura, agua y minerales del suelo.</label></div></div>
+
+        <button type="button" class="btn-submit" onclick="calculateScore()">Finalizar y Calificar Prueba</button>
+    </form>
+</div>
+
+<div id="result-modal">
+    <div class="result-content">
+        <h2>Resultados de la Evaluación</h2>
+        <p id="res-student-name" style="font-weight: bold; font-size: 1.1rem;"></p>
+        <div class="score-display" id="res-total-score">0 / 60</div>
+        <p id="res-percentage" style="font-size: 1.2rem; font-weight: bold;"></p>
+
+        <div class="area-score">
+            <p><strong>Comprensión Lectora:</strong> <span id="res-reading">0/20</span></p>
+            <p><strong>Matemáticas:</strong> <span id="res-math">0/20</span></p>
+            <p><strong>Ciencias:</strong> <span id="res-science">0/20</span></p>
+        </div>
+
+        <button class="btn-close" onclick="closeModal()">Cerrar / Volver a revisar</button>
+    </div>
+</div>
+
+<script>
+    function calculateScore() {
+        const name = document.getElementById('student-name').value;
+        const group = document.getElementById('student-group').value;
+
+        if (!name || !group) {
+            alert('Por favor, ingresa tu Nombre Completo y Grupo antes de calificar la prueba.');
+            return;
+        }
+
+        let totalCorrect = 0;
+        let readingCorrect = 0;
+        let mathCorrect = 0;
+        let scienceCorrect = 0;
+
+        const cards = document.querySelectorAll('.question-card');
+
+        cards.forEach((card, index) => {
+            const qNum = index + 1;
+            const selected = document.querySelector(`input[name="q${qNum}"]:checked`);
+            const correct = card.getAttribute('data-correct');
+
+            if (selected && selected.value === correct) {
+                totalCorrect++;
+                if (qNum <= 20) readingCorrect++;
+                else if (qNum <= 40) mathCorrect++;
+                else scienceCorrect++;
+            }
+        });
+
+        const percentage = ((totalCorrect / 60) * 100).toFixed(1);
+
+        document.getElementById('res-student-name').innerText = `${name} (${group})`;
+        document.getElementById('res-total-score').innerText = `${totalCorrect} / 60 aciertos`;
+        document.getElementById('res-percentage').innerText = `Calificación final: ${percentage}%`;
+        document.getElementById('res-reading').innerText = `${readingCorrect} / 20 aciertos`;
+        document.getElementById('res-math').innerText = `${mathCorrect} / 20 aciertos`;
+        document.getElementById('res-science').innerText = `${scienceCorrect} / 20 aciertos`;
+
+        document.getElementById('result-modal').style.display = 'flex';
+    }
+
+    function closeModal() {
+        document.getElementById('result-modal').style.display = 'none';
+    }
+</script>
+
+</body>
+</html>
