@@ -1,398 +1,469 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Evaluación Diagnóstica - 6° de Primaria</title>
-    <style>
-        :root {
-            --primary-color: #2b5c8f;
-            --secondary-color: #4a90e2;
-            --bg-color: #f4f7f6;
-            --card-bg: #ffffff;
-            --text-color: #2c3e50;
-            --correct-color: #27ae60;
-            --border-radius: 10px;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulador PISA 6° Grado - 60 Reactivos</title>
+  <style>
+    :root {
+      --primary: #1d4ed8;
+      --primary-dark: #1e40af;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --success: #16a34a;
+      --danger: #dc2626;
+      --lectura: #b45309;
+      --mate: #1d4ed8;
+      --ciencias: #15803d;
+    }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0;
-            padding: 20px;
-            line-height: 1.6;
-        }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); padding: 15px; }
+    .container { max-width: 950px; margin: 0 auto; }
 
-        .container {
-            max-width: 850px;
-            margin: 0 auto;
-            background-color: var(--card-bg);
-            padding: 30px;
-            border-radius: var(--border-radius);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        }
+    header {
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 15px;
+      border-top: 5px solid var(--primary);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      text-align: center;
+    }
+    header h1 { font-size: 1.5rem; color: var(--primary-dark); margin-bottom: 6px; }
+    header p { color: var(--text-muted); font-size: 0.9rem; }
 
-        header {
-            text-align: center;
-            border-bottom: 3px solid var(--primary-color);
-            padding-bottom: 15px;
-            margin-bottom: 25px;
-        }
+    .student-bar {
+      margin-top: 15px;
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .student-bar input {
+      padding: 8px 14px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 0.95rem;
+      width: 320px;
+    }
 
-        h1 {
-            color: var(--primary-color);
-            margin-bottom: 5px;
-            font-size: 1.8rem;
-        }
+    /* Navegación rápida (cuadrícula 1 a 60) */
+    .grid-nav-container {
+      background: var(--card-bg);
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+      border: 1px solid var(--border);
+    }
+    .grid-nav-title { font-size: 0.85rem; font-weight: bold; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; }
+    .grid-nav {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(32px, 1fr));
+      gap: 5px;
+    }
+    .grid-btn {
+      padding: 6px 0;
+      font-size: 0.75rem;
+      border: 1px solid var(--border);
+      background: #f1f5f9;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+    .grid-btn.answered { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .grid-btn.active { outline: 2px solid #000; }
 
-        .student-info {
-            display: grid;
-            grid-template-columns: 2fr 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 25px;
-            background-color: #eef4f9;
-            padding: 15px;
-            border-radius: 8px;
-        }
+    /* Tarjetas de preguntas */
+    .question-card {
+      background: var(--card-bg);
+      padding: 18px;
+      border-radius: 10px;
+      margin-bottom: 16px;
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+    }
+    .area-badge {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin-bottom: 8px;
+    }
+    .badge-Lectura { background: #fef3c7; color: var(--lectura); }
+    .badge-Matemáticas { background: #dbeafe; color: var(--mate); }
+    .badge-Ciencias { background: #dcfce7; color: var(--ciencias); }
 
-        .input-group {
-            display: flex;
-            flex-direction: column;
-        }
+    .q-text { font-size: 1rem; font-weight: 600; margin-bottom: 12px; line-height: 1.45; }
+    .options-group { display: flex; flex-direction: column; gap: 8px; }
+    .opt-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.92rem;
+      transition: background 0.15s;
+    }
+    .opt-label:hover { background-color: #f8fafc; }
+    .opt-label input[type="radio"] { accent-color: var(--primary); width: 17px; height: 17px; }
 
-        .input-group label {
-            font-size: 0.85rem;
-            font-weight: bold;
-            color: var(--primary-color);
-            margin-bottom: 3px;
-        }
+    /* Controles de página */
+    .nav-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 20px;
+      gap: 10px;
+    }
+    .btn {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 10px 22px;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 0.95rem;
+    }
+    .btn:disabled { background: #cbd5e1; cursor: not-allowed; }
+    .btn-finish { background: var(--success); }
 
-        .input-group input {
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 0.95rem;
-        }
-
-        .section-title {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 8px 15px;
-            border-radius: 5px;
-            font-size: 1.1rem;
-            margin-top: 25px;
-            margin-bottom: 15px;
-        }
-
-        .question-card {
-            background-color: #fff;
-            border: 1px solid #e1e8ed;
-            border-radius: 8px;
-            padding: 15px 20px;
-            margin-bottom: 15px;
-        }
-
-        .question-text {
-            font-weight: 600;
-            margin-bottom: 10px;
-        }
-
-        .reading-box {
-            background-color: #f9f9f9;
-            border-left: 4px solid var(--secondary-color);
-            padding: 12px 15px;
-            margin-bottom: 15px;
-            font-style: italic;
-            font-size: 0.95rem;
-        }
-
-        .options label {
-            display: block;
-            padding: 8px 12px;
-            margin: 5px 0;
-            background-color: #f8f9fa;
-            border: 1px solid #e9ecef;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .options label:hover {
-            background-color: #e8f4fe;
-        }
-
-        .options input[type="radio"] {
-            margin-right: 10px;
-        }
-
-        .open-answer {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            margin-top: 8px;
-            font-size: 0.95rem;
-            box-sizing: border-box;
-        }
-
-        .btn-submit {
-            display: block;
-            width: 100%;
-            padding: 15px;
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: var(--border-radius);
-            font-size: 1.1rem;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 30px;
-            transition: background 0.3s;
-        }
-
-        .btn-submit:hover {
-            background-color: #1a3c5e;
-        }
-
-        #result-modal {
-            display: none;
-            margin-top: 30px;
-            padding: 25px;
-            background-color: #eef9f1;
-            border: 2px solid var(--correct-color);
-            border-radius: var(--border-radius);
-            text-align: center;
-        }
-
-        #result-modal h2 {
-            color: var(--correct-color);
-            margin-top: 0;
-        }
-
-        .score-big {
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: var(--primary-color);
-            margin: 10px 0;
-        }
-
-        .breakdown {
-            text-align: left;
-            margin-top: 15px;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-
-        .breakdown-item {
-            background: white;
-            padding: 10px;
-            border-radius: 5px;
-            border: 1px solid #ddd;
-        }
-
-        @media (max-width: 600px) {
-            .student-info { grid-template-columns: 1fr; }
-            .breakdown { grid-template-columns: 1fr; }
-        }
-    </style>
+    /* Resultados */
+    #results-area {
+      display: none;
+      background: var(--card-bg);
+      padding: 25px;
+      border-radius: 12px;
+      margin-top: 25px;
+      border: 1px solid var(--border);
+    }
+    .score-banner {
+      text-align: center;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    .score-number { font-size: 2.8rem; font-weight: 800; color: var(--primary); margin: 5px 0; }
+    .breakdown-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 15px;
+      margin: 20px 0;
+    }
+    .breakdown-card {
+      background: #f8fafc;
+      padding: 15px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      text-align: center;
+    }
+    .breakdown-card h4 { font-size: 0.95rem; margin-bottom: 6px; }
+    .review-item {
+      padding: 12px;
+      border-radius: 6px;
+      margin-bottom: 10px;
+      font-size: 0.88rem;
+    }
+    .correct-ans { background: #f0fdf4; border-left: 4px solid var(--success); }
+    .incorrect-ans { background: #fef2f2; border-left: 4px solid var(--danger); }
+  </style>
 </head>
 <body>
 
 <div class="container">
-    <header>
-        <h1>📝 Evaluación Diagnóstica — 6.º de Primaria</h1>
-        <p>Responde cada una de las preguntas de manera individual.</p>
-    </header>
+  <header>
+    <h1>Prueba Estandarizada Formativa - Estilo PISA</h1>
+    <p>Educación Primaria (6° Grado) — 60 Reactivos de Competencias Integradas</p>
+    <div class="student-bar">
+      <input type="text" id="studentName" placeholder="Nombre completo del alumno..." required>
+    </div>
+  </header>
 
-    <div class="student-info">
-        <div class="input-group">
-            <label for="student-name">Nombre del Alumno/a:</label>
-            <input type="text" id="student-name" placeholder="Escribe tu nombre completo">
-        </div>
-        <div class="input-group">
-            <label for="student-date">Fecha:</label>
-            <input type="date" id="student-date">
-        </div>
-        <div class="input-group">
-            <label for="student-group">Grupo:</label>
-            <input type="text" id="student-group" placeholder="Ej: 6° A">
-        </div>
+  <!-- Navegación por preguntas -->
+  <div class="grid-nav-container">
+    <div class="grid-nav-title">Navegador de reactivos (1 al 60):</div>
+    <div class="grid-nav" id="gridNav"></div>
+  </div>
+
+  <!-- Contenedor de preguntas -->
+  <div id="questionsContainer"></div>
+
+  <!-- Paginación -->
+  <div class="nav-controls">
+    <button class="btn" id="prevBtn" onclick="cambiarPagina(-1)">Anterior</button>
+    <span id="pageIndicator" style="font-weight: 600; font-size: 0.9rem; color: var(--text-muted);">Página 1 de 6</span>
+    <button class="btn" id="nextBtn" onclick="cambiarPagina(1)">Siguiente</button>
+    <button class="btn btn-finish" id="finishBtn" onclick="calificarPrueba()">Finalizar Prueba</button>
+  </div>
+
+  <!-- Sección de Resultados -->
+  <div id="results-area">
+    <div class="score-banner">
+      <h2 id="resStudent">Resultados de la Evaluación</h2>
+      <div class="score-number" id="resTotal">0 / 60</div>
+      <p id="resPercentage" style="font-weight: 600;"></p>
+      <p id="resLevel" style="margin-top: 6px; color: var(--text-muted);"></p>
     </div>
 
-    <form id="quiz-form">
-        <!-- LENGUA MATERNA -->
-        <div class="section-title">I. Lengua Materna (Español)</div>
-
-        <div class="reading-box">
-            <strong>Lectura:</strong> "El ajolote mexicano es un anfibio extraordinario endémico de la cuenca del Valle de México. Posee la capacidad única de regenerar miembros amputados y órganos vitales. Sin embargo, actualmente se encuentra en peligro crítico de extinción debido a la contaminación de los canales de Xochimilco y la introducción de especies invasoras."
-        </div>
-
-        <div class="question-card">
-            <div class="question-text">1. ¿Cuál es la idea principal del texto anterior?</div>
-            <div class="options">
-                <label><input type="radio" name="p1" value="a"> a) Describir cómo nadan las especies invasoras en Xochimilco.</label>
-                <label><input type="radio" name="p1" value="b"> b) Informar sobre las características del ajolote y la amenaza de su extinción.</label>
-                <label><input type="radio" name="p1" value="c"> c) Explicar la historia antigua de la cuenca del Valle de México.</label>
-                <label><input type="radio" name="p1" value="d"> d) Enseñar cómo cuidar a los anfibios en casa.</label>
-            </div>
-        </div>
-
-        <div class="question-card">
-            <div class="question-text">2. ¿Qué tipo de texto es el anterior?</div>
-            <div class="options">
-                <label><input type="radio" name="p2" value="a"> a) Narrativo (cuento)</label>
-                <label><input type="radio" name="p2" value="b"> b) Expositivo / Informativo</label>
-                <label><input type="radio" name="p2" value="c"> c) Instructivo (receta)</label>
-            </div>
-        </div>
-
-        <div class="question-card">
-            <div class="question-text">3. Identifica la palabra que requiere tilde por ser esdrújula:</div>
-            <div class="options">
-                <label><input type="radio" name="p3" value="a"> a) Cancion</label>
-                <label><input type="radio" name="p3" value="b"> b) Pajaro</label>
-                <label><input type="radio" name="p3" value="c"> c) Arbol</label>
-                <label><input type="radio" name="p3" value="d"> d) Pared</label>
-            </div>
-        </div>
-
-        <!-- MATEMÁTICAS -->
-        <div class="section-title">II. Matemáticas</div>
-
-        <div class="question-card">
-            <div class="question-text">4. Resuelve la siguiente multiplicación: 3,485 × 24</div>
-            <input type="number" name="p4" class="open-answer" placeholder="Escribe el resultado numérico">
-        </div>
-
-        <div class="question-card">
-            <div class="question-text">5. María compró 1.5 kg de manzanas y 2.25 kg de peras. Si la bolsa vacía pesa 0.1 kg, ¿cuál es el peso total (en kg) que lleva en la mano?</div>
-            <input type="number" step="0.01" name="p5" class="open-answer" placeholder="Ejemplo: 3.85">
-        </div>
-
-        <div class="question-card">
-            <div class="question-text">6. ¿Cuál es el área de un terreno rectangular que mide 12 metros de largo y 5 metros de ancho?</div>
-            <div class="options">
-                <label><input type="radio" name="p6" value="a"> a) 34 m²</label>
-                <label><input type="radio" name="p6" value="b"> b) 60 m²</label>
-                <label><input type="radio" name="p6" value="c"> c) 17 m²</label>
-                <label><input type="radio" name="p6" value="d"> d) 50 m²</label>
-            </div>
-        </div>
-
-        <!-- CIENCIAS NATURALES -->
-        <div class="section-title">III. Ciencias Naturales</div>
-
-        <div class="question-card">
-            <div class="question-text">7. ¿Qué sistema del cuerpo humano se encarga de transportar el oxígeno y los nutrientes a través de la sangre?</div>
-            <div class="options">
-                <label><input type="radio" name="p7" value="a"> a) Sistema Digestivo</label>
-                <label><input type="radio" name="p7" value="b"> b) Sistema Circulatorio</label>
-                <label><input type="radio" name="p7" value="c"> c) Sistema Nervioso</label>
-            </div>
-        </div>
-
-        <div class="question-card">
-            <div class="question-text">8. El agua, la luz solar, la temperatura y el suelo en un ecosistema corresponden a:</div>
-            <div class="options">
-                <label><input type="radio" name="p8" value="a"> a) Factores Bióticos</label>
-                <label><input type="radio" name="p8" value="b"> b) Factores Abióticos</label>
-                <label><input type="radio" name="p8" value="c"> c) Factores Artificiales</label>
-            </div>
-        </div>
-
-        <!-- HISTORIA Y GEOGRAFÍA -->
-        <div class="section-title">IV. Historia y Geografía</div>
-
-        <div class="question-card">
-            <div class="question-text">9. ¿Cómo se llaman las líneas imaginarias horizontales que dividen la Tierra y miden la latitud (como el Ecuador)?</div>
-            <div class="options">
-                <label><input type="radio" name="p9" value="a"> a) Meridianos</label>
-                <label><input type="radio" name="p9" value="b"> b) Paralelos</label>
-                <label><input type="radio" name="p9" value="c"> c) Polos</label>
-            </div>
-        </div>
-
-        <div class="question-card">
-            <div class="question-text">10. ¿Cuál fue una de las principales causas que impulsó el inicio de la Revolución Mexicana en 1910?</div>
-            <div class="options">
-                <label><input type="radio" name="p10" value="a"> a) El descontento social ante la larga dictadura de Porfirio Díaz.</label>
-                <label><input type="radio" name="p10" value="b"> b) La llegada de Cristóbal Colón a América.</label>
-                <label><input type="radio" name="p10" value="c"> c) La firma del Tratado de Libre Comercio.</label>
-            </div>
-        </div>
-
-        <button type="button" class="btn-submit" onclick="calcularCalificacion()">Calcular Resultados</button>
-    </form>
-
-    <div id="result-modal">
-        <h2>Resultados de la Evaluación</h2>
-        <p id="student-summary"></p>
-        <div class="score-big" id="score-display">0 / 10</div>
-        <p id="feedback-message"></p>
-        
-        <div class="breakdown">
-            <div class="breakdown-item"><strong>Español:</strong> <span id="score-esp">0</span>/3</div>
-            <div class="breakdown-item"><strong>Matemáticas:</strong> <span id="score-mat">0</span>/3</div>
-            <div class="breakdown-item"><strong>Ciencias:</strong> <span id="score-cie">0</span>/2</div>
-            <div class="breakdown-item"><strong>Hist. y Geo.:</strong> <span id="score-soc">0</span>/2</div>
-        </div>
+    <div class="breakdown-grid">
+      <div class="breakdown-card">
+        <h4 style="color: var(--lectura);">Comprensión Lectora</h4>
+        <div style="font-size: 1.4rem; font-weight: bold;" id="scoreLectura">0/20</div>
+      </div>
+      <div class="breakdown-card">
+        <h4 style="color: var(--mate);">Pensamiento Matemático</h4>
+        <div style="font-size: 1.4rem; font-weight: bold;" id="scoreMate">0/20</div>
+      </div>
+      <div class="breakdown-card">
+        <h4 style="color: var(--ciencias);">Pensamiento Científico</h4>
+        <div style="font-size: 1.4rem; font-weight: bold;" id="scoreCiencias">0/20</div>
+      </div>
     </div>
+
+    <h3 style="margin-bottom: 12px;">Revisión detallada de reactivos:</h3>
+    <div id="detailedReview"></div>
+  </div>
 </div>
 
 <script>
-    function calcularCalificacion() {
-        const respuestasCorrectas = {
-            p1: "b", p2: "b", p3: "b",
-            p4: 83640, p5: 3.85, p6: "b",
-            p7: "b", p8: "b",
-            p9: "b", p10: "a"
-        };
+// BANCO COMPLETO DE 60 PREGUNTAS PISA (20 Lectura, 20 Matemáticas, 20 Ciencias)
+const examData = [
+  // ==================== LECTURA (1 - 20) ====================
+  { a: "Lectura", q: "1. En un artículo escolar se explica que las abejas transportan polen de una flor a otra permitiendo el nacimiento de frutas y semillas. ¿Cuál es el papel biológico de las abejas?", o: ["Producir miel únicamente para consumo humano", "Polinizar las flores para la reproducción de las plantas", "Consumir las plagas perjudiciales del suelo", "Defender los cultivos de aves herbívoras"], c: 1, exp: "La polinización facilita la reproducción de las especies vegetales con flor." },
+  { a: "Lectura", q: "2. Una fábula relata que la cigarra cantó todo el verano mientras la hormiga juntaba comida para el invierno. Al llegar el frío, la cigarra no tenía qué comer. ¿Qué enseñanza o moraleja transmite el relato?", o: ["El canto es la labor más apreciada", "Es indispensable planificar y esforzarse con anticipación", "El invierno dura poco tiempo", "Hay que depender siempre de los vecinos"], c: 1, exp: "Transmite el valor de la prevención y la responsabilidad laboral." },
+  { a: "Lectura", q: "3. 'El plástico desechable tarda hasta 500 años en descomponerse en los océanos, afectando tortugas y peces'. Según la frase anterior, ¿cuál es el argumento principal del autor?", o: ["Demostrar la durabilidad comercial del plástico", "Fomentar la pesca en alta mar", "Alertar sobre el grave impacto ecológico del plástico en el mar", "Calcular el tiempo de vida de los peces"], c: 2, exp: "El texto busca generar conciencia sobre la contaminación oceánica prolongada." },
+  { a: "Lectura", q: "4. En un instructivo para armar un papalote se indica: 'Sujete firmemente las varillas antes de adherir el papel'. Si no se sigue este paso, ¿qué ocurriría probablemente?", o: ["El papalote volará mucho más alto", "La estructura quedará inestable y se desarmará con el viento", "El papel cambiará de color", "El hilo se cortará de inmediato"], c: 1, exp: "Las varillas son la estructura base; sin sujeción previa, el armazón colapsa." },
+  { a: "Lectura", q: "5. En una noticia dice: 'El municipio recolectó 12 toneladas de residuos electrónicos para evitar contaminar mantos acuíferos'. ¿Qué motivó a las autoridades a realizar la campaña?", o: ["Vender componentes de computadoras", "Proteger el agua subterránea de sustancias tóxicas", "Fabricar nuevos teléfonos celulares", "Despejar espacio en los parques públicos"], c: 1, exp: "El texto declara expresamente la prevención de la contaminación en mantos freáticos." },
+  { a: "Lectura", q: "6. En un texto de divulgación: 'Los fósiles son huellas o restos de seres vivos de eras geológicas pasadas que se petrificaron en roca'. ¿Para qué sirve un fósil a los paleontólogos?", o: ["Para reconstruir la historia y evolución de la vida antigua", "Para generar electricidad renovable", "Para predecir el clima del siguiente año", "Para purificar yacimientos de agua"], c: 0, exp: "Los fósiles permiten conocer especies extintas y ambientes del pasado remoto." },
+  { a: "Lectura", q: "7. 'Aunque Lucía tenía miedo a las alturas, subió al mirador para acompañar a su hermano menor que lloraba'. ¿Qué cualidad describe mejor a Lucía?", o: ["Egoísmo e indiferencia", "Empatía y valentía fraternal", "Curiosidad geográfica", "Desobediencia familiar"], c: 1, exp: "Superó su propio temor para apoyar emocionalmente a su hermano." },
+  { a: "Lectura", q: "8. ¿Cuál de las siguientes afirmaciones corresponde a una OPINIÓN y no a un hecho comprobable?", o: ["El agua hierve a 100°C a nivel del mar", "La Luna gira alrededor de la Tierra", "El otoño es la estación más alegre y hermosa del año", "Los mamíferos amamantan a sus crías"], c: 2, exp: "Calificar una estación como 'la más alegre' depende de gustos subjetivos personales." },
+  { a: "Lectura", q: "9. Un correo electrónico escolar finaliza diciendo: 'Favor de confirmar su asistencia a la junta antes del viernes para asegurar las sillas suficientes'. ¿A quién va dirigido principalmente?", o: ["A los fabricantes de muebles", "A los padres de familia o tutores convocados", "A los alumnos de primer grado", "Al personal de intendencia exclusivamente"], c: 1, exp: "Son los adultos convocados quienes deben confirmar su presencia a las juntas." },
+  { a: "Lectura", q: "10. En una receta: 'Deje reposar la mezcla 15 minutos en un lugar templado para que la levadura fermente'. ¿Qué función gramatical cumplen las palabras 'deje reposar'?", o: ["Indicar una instrucción u orden de procedimiento", "Hacer una pregunta abierta", "Expresar una queja", "Describir el sabor del platillo"], c: 0, exp: "Los instructivos y recetas usan verbos en imperativo o infinitivo como pauta de acción." },
+  { a: "Lectura", q: "11. 'El volcán arrojó ceniza durante tres días; por ello, las clases presenciales se suspendieron preventivamente'. ¿Qué relación lógica une ambas oraciones?", o: ["Causa y consecuencia", "Comparación de tamaños", "Contradicción total", "Pregunta y respuesta"], c: 0, exp: "La emisión de ceniza (causa) provocó la suspensión de clases (efecto/consecuencia)." },
+  { a: "Lectura", q: "12. En un cartel: '¡Cierra la llave mientras te enjabonas las manos! Cada gota cuenta'. ¿Cuál es el propósito comunicativo del mensaje?", o: ["Vender jabón antibacterial", "Promover el ahorro y cuidado responsable del agua", "Explicar el ciclo hidrológico", "Calcular el costo del servicio de fontanería"], c: 1, exp: "Es una campaña de concientización comunitaria sobre el ahorro de agua." },
+  { a: "Lectura", q: "13. En una biografía escolar: 'Marie Curie fue la primera persona en recibir dos premios Nobel en distintas especialidades científicas'. La idea central enfatiza:", o: ["Su lugar de nacimiento", "Su sobresaliente trayectoria y aporte a la ciencia", "Su vida durante la infancia", "Los nombres de sus maestros"], c: 1, exp: "Destaca la trascendencia de sus investigaciones y reconocimientos mundiales." },
+  { a: "Lectura", q: "14. 'Al caer la noche en la selva, el silencio se rompía con el concierto de ranas y grillos'. ¿Qué recurso literario o figura se emplea?", o: ["Metáfora sobre los sonidos nocturnos de la naturaleza", "Una ecuación matemática", "Un reporte estadístico", "Una instrucción técnica"], c: 0, exp: "Llama 'concierto' a los sonidos simultáneos de animales nocturnos." },
+  { a: "Lectura", q: "15. En el reglamento de la biblioteca: 'Hablar en voz baja para mantener la concentración colectiva'. ¿Por qué se establece esta norma?", o: ["Para no despertar a las aves del exterior", "Para garantizar un ambiente propicio para el estudio de todos", "Para impedir que los usuarios se saluden", "Para ahorrar energía eléctrica"], c: 1, exp: "El silencio compartido favorece el estudio y la lectura comunitaria." },
+  { a: "Lectura", q: "16. En un artículo de nutrición: 'El consumo excesivo de bebidas azucaradas incrementa el riesgo de caries y sobrepeso infantil'. La intención del texto es:", o: ["Promocionar refrescos embotellados", "Orientar sobre hábitos de consumo saludables", "Describir la composición química del azúcar", "Prohibir la venta de agua pura"], c: 1, exp: "Advierte sobre riesgos de salud para modificar patrones de consumo." },
+  { a: "Lectura", q: "17. 'El telescopio James Webb envió imágenes de galaxias formadas hace miles de millones de años'. De aquí se deduce que el telescopio permite:", o: ["Viajar físicamente en el tiempo a esas estrellas", "Estudiar los orígenes y etapas tempranas del Universo", "Predecir erupciones volcánicas terrestres", "Modificar las órbitas planetarias"], c: 1, exp: "Captar luz de galaxias antiquísimas permite estudiar la formación del cosmos." },
+  { a: "Lectura", q: "18. En una carta de opinión vecinal: 'Solicitamos podar las ramas que tapan la luminaria de la esquina por seguridad nocturna'. ¿Cuál es la petición concreta?", o: ["Retirar todos los árboles del vecindario", "Despejar la luz del poste cortando las ramas que la obstruyen", "Pintar la acera de color blanco", "Cambiar el horario de entrada al trabajo"], c: 1, exp: "Se solicita despejar la luminaria pública para mejorar la visibilidad y seguridad." },
+  { a: "Lectura", q: "19. En un texto sobre energías limpias: 'A diferencia de los combustibles fósiles, el viento es inagotable y no emite gases tóxicos'. ¿Qué ventaja destaca del viento?", o: ["Su elevado costo económico", "Su carácter renovable y bajo impacto contaminante", "Que sopla con idéntica fuerza todo el año", "Que produce carbón vegetal"], c: 1, exp: "Resalta que es una fuente natural infinita y libre de emisiones dañinas." },
+  { a: "Lectura", q: "20. Al concluir un cuento de misterio, el detective encuentra que la llave nunca salió del bolsillo del dueño. Esto significa que:", o: ["La puerta jamás estuvo cerrada con cerrojo", "El misterio involucra directamente a quien tenía la llave", "Un intruso la copió con magia", "El detective se equivocó de casa"], c: 1, exp: "La evidencia lógica apunta al portador original de la llave." },
 
-        let puntos = 0, puntosEsp = 0, puntosMat = 0, puntosCie = 0, puntosSoc = 0;
-        const form = document.getElementById('quiz-form');
+  // ==================== MATEMÁTICAS (21 - 40) ====================
+  { a: "Matemáticas", q: "21. Un pantalón cuesta $400 y tiene un 25% de descuento en la tienda escolar. ¿Cuánto se descontará del precio original?", o: ["$25", "$50", "$100", "$75"], c: 2, exp: "El 25% de $400 es: 400 × 0.25 = $100 de descuento." },
+  { a: "Matemáticas", q: "22. En una fiesta se repartieron 3 pizzas completas entre 4 amigos en partes exactamente iguales. ¿Qué fracción de pizza le correspondió a cada uno?", o: ["1/4 de pizza", "3/4 de pizza", "4/3 de pizza", "1/3 de pizza"], c: 1, exp: "Repartir 3 unidades entre 4 personas equivale a 3 ÷ 4 = 3/4." },
+  { a: "Matemáticas", q: "23. Un terreno de cultivo rectangular mide 15 metros de largo por 8 metros de ancho. ¿Cuál es su área total en metros cuadrados?", o: ["46 m²", "120 m²", "60 m²", "23 m²"], c: 1, exp: "Área del rectángulo = largo × ancho = 15 m × 8 m = 120 m²." },
+  { a: "Matemáticas", q: "24. Se desea colocar una cerca de alambre alrededor de un corral cuadrado que mide 9 metros por lado. ¿Cuántos metros de alambre se ocupan?", o: ["81 metros", "36 metros", "18 metros", "27 metros"], c: 1, exp: "Perímetro del cuadrado = 4 × lado = 4 × 9 m = 36 metros." },
+  { a: "Matemáticas", q: "25. Si 4 libretas idénticas cuestan $80, ¿cuánto costarán 7 de esas mismas libretas?", o: ["$120", "$140", "$160", "$100"], c: 1, exp: "Cada libreta cuesta 80 ÷ 4 = $20. Por 7 libretas: 7 × 20 = $140." },
+  { a: "Matemáticas", q: "26. En sus últimos 4 exámenes, Mateo obtuvo 8, 9, 7 y 10. ¿Cuál es su promedio o media aritmética?", o: ["8.0", "8.5", "9.0", "7.5"], c: 1, exp: "Suma: 8 + 9 + 7 + 10 = 34. Promedio: 34 ÷ 4 = 8.5." },
+  { a: "Matemáticas", q: "27. Una jarra contiene 2.5 litros de agua fresca. ¿A cuántos mililitros equivale este volumen?", o: ["250 ml", "2,500 ml", "25,000 ml", "25 ml"], c: 1, exp: "1 litro tiene 1,000 ml; por lo tanto, 2.5 × 1,000 = 2,500 ml." },
+  { a: "Matemáticas", q: "28. Sofía compró una libreta de $24.50 y una pluma de $13.25. Si pagó con un billete de $50, ¿cuánto cambio recibió?", o: ["$12.25", "$37.75", "$13.50", "$11.75"], c: 0, exp: "Total gastado: 24.50 + 13.25 = $37.75. Cambio: 50.00 - 37.75 = $12.25." },
+  { a: "Matemáticas", q: "29. En una escuela con 300 estudiantes, el 40% practica fútbol. ¿Cuántos alumnos juegan fútbol?", o: ["120 alumnos", "140 alumnos", "100 alumnos", "150 alumnos"], c: 0, exp: "300 × 0.40 = 120 alumnos." },
+  { a: "Matemáticas", q: "30. En un mapa a escala, 1 centímetro representa 15 kilómetros en la realidad. Si entre dos pueblos hay 4 cm en el mapa, ¿cuál es la distancia real?", o: ["30 km", "45 km", "60 km", "75 km"], c: 2, exp: "4 cm × 15 km/cm = 60 km en la realidad." },
+  { a: "Matemáticas", q: "31. ¿Cuál de las siguientes fracciones es equivalente a 2/5?", o: ["4/10", "3/8", "6/12", "5/2"], c: 0, exp: "Multiplicando numerador y denominador por 2: (2×2)/(5×2) = 4/10." },
+  { a: "Matemáticas", q: "32. Una caja de zapatos tiene 30 cm de largo, 10 cm de ancho y 10 cm de alto. ¿Cuál es su volumen?", o: ["50 cm³", "3,000 cm³", "600 cm³", "300 cm³"], c: 1, exp: "Volumen = largo × ancho × alto = 30 × 10 × 10 = 3,000 cm³." },
+  { a: "Matemáticas", q: "33. Una película comenzó a las 4:45 p.m. y terminó a las 6:15 p.m. ¿Cuánto tiempo duró la función?", o: ["1 hora y 15 minutos", "1 hora y 30 minutos", "1 hora y 45 minutos", "2 horas completas"], c: 1, exp: "De 4:45 a 5:45 hay 1 hora; más 30 minutos para llegar a 6:15 son 1 h 30 min." },
+  { a: "Matemáticas", q: "34. En una urna hay 3 canicas verdes y 7 canicas azules. Si se extrae una canica al azar, ¿cuál es la probabilidad de sacar una verde?", o: ["3 de 10 (3/10)", "7 de 10 (7/10)", "3 de 7 (3/7)", "1 de 3 (1/3)"], c: 0, exp: "Casos favorables: 3 verdes. Total de casos posibles: 3 + 7 = 10 canicas." },
+  { a: "Matemáticas", q: "35. Un panadero empaca 148 panes en bolsas de 10 piezas cada una. ¿Cuántos panes le sobran sin completar una bolsa?", o: ["14 panes", "8 panes", "4 panes", "10 panes"], c: 1, exp: "148 ÷ 10 = 14 bolsas completas con un residuo de 8 panes sobrantes." },
+  { a: "Matemáticas", q: "36. ¿Cuál es el perímetro de un hexágono regular cuyos lados miden todos 7 centímetros?", o: ["42 cm", "35 cm", "49 cm", "28 cm"], c: 0, exp: "Un hexágono tiene 6 lados iguales. Perímetro = 6 × 7 cm = 42 cm." },
+  { a: "Matemáticas", q: "37. ¿Qué número decimal se ubica exactamente a la mitad entre 1.4 y 1.6 en la recta numérica?", o: ["1.45", "1.50", "1.55", "1.48"], c: 1, exp: "El punto medio es (1.4 + 1.6) ÷ 2 = 3.0 ÷ 2 = 1.5 (o 1.50)." },
+  { a: "Matemáticas", q: "38. Observa la siguiente sucesión numérica: 3, 7, 11, 15, ___. ¿Cuál es el número que sigue?", o: ["18", "19", "20", "21"], c: 1, exp: "La regla es sumar 4 en cada término: 15 + 4 = 19." },
+  { a: "Matemáticas", q: "39. Una cubeta tiene una capacidad de 12 litros. Si está llena a 3/4 de su capacidad, ¿cuántos litros de agua contiene?", o: ["6 litros", "8 litros", "9 litros", "10 litros"], c: 2, exp: "12 × (3/4) = (12 ÷ 4) × 3 = 3 × 3 = 9 litros." },
+  { a: "Matemáticas", q: "40. En una frutería 1 kg de manzanas vale $35. Si don Luis pagó $105, ¿cuántos kilos compró exactamente?", o: ["2 kg", "3 kg", "4 kg", "3.5 kg"], c: 1, exp: "105 ÷ 35 = 3 kilogramos." },
 
-        // Evaluación por materia
-        if (form.p1.value === respuestasCorrectas.p1) { puntos++; puntosEsp++; }
-        if (form.p2.value === respuestasCorrectas.p2) { puntos++; puntosEsp++; }
-        if (form.p3.value === respuestasCorrectas.p3) { puntos++; puntosEsp++; }
+  // ==================== CIENCIAS (41 - 60) ====================
+  { a: "Ciencias", q: "41. En un experimento para ver qué abono funciona mejor, se usan 3 plantas iguales con la misma tierra y luz, pero con marcas distintas de abono. ¿Qué variable se está probando?", o: ["La cantidad de luz solar", "El tipo o marca de abono", "El tipo de maceta", "El clima del cuarto"], c: 1, exp: "La variable independiente manipulada por el investigador es el tipo de abono." },
+  { a: "Ciencias", q: "42. ¿Cuál es la función vital de las hojas en las plantas durante el día?", o: ["Absorber minerales del suelo", "Captar luz solar y dióxido de carbono para realizar fotosíntesis", "Sostener las ramas firmemente", "Producir semillas directamente"], c: 1, exp: "Las hojas concentran la clorofila que transforma luz y CO2 en carbohidratos." },
+  { a: "Ciencias", q: "43. En una cadena trófica (pasto -> conejo -> coyote), ¿qué ocurriría si desaparecieran todos los conejos?", o: ["Los pastizales crecerían sin control herbívoro y los coyotes carecerían de alimento", "Los coyotes comerían pasto de inmediato", "No pasaría absolutamente nada", "Aumentaría la cantidad de zorros"], c: 0, exp: "Al faltar el consumidor primario, el productor prolifera y el carnívoro pasa hambre." },
+  { a: "Ciencias", q: "44. Se tiene un vaso con agua y arena mezcladas. ¿Cuál es el método físico más adecuado para separarlas por completo?", o: ["Evaporación", "Filtración", "Magnetismo", "Destilación compleja"], c: 1, exp: "Al filtrar con papel o malla, la arena sólida queda retenida y el líquido pasa limpio." },
+  { a: "Ciencias", q: "45. Cuando el vapor de agua asciende a la atmósfera, se enfría y forma diminutas gotas en las nubes, este cambio de estado se llama:", o: ["Fusión", "Condensación", "Sublimación", "Solidificación"], c: 1, exp: "La condensación es la transformación de vapor gaseoso a gotas líquidas." },
+  { a: "Ciencias", q: "46. ¿Cuál es el órgano muscular principal encargado de bombear sangre con oxígeno a todo el cuerpo humano?", o: ["El pulmón", "El corazón", "El hígado", "El estómago"], c: 1, exp: "El corazón funciona como una bomba que distribuye la sangre por el sistema circulatorio." },
+  { a: "Ciencias", q: "47. Los osos polares tienen abundante grasa subcutánea y pelaje denso. Estas características representan:", o: ["Una enfermedad de la piel", "Una adaptación biológica para sobrevivir al frío extremo", "Una consecuencia de comer plantas", "Una mutación perjudicial"], c: 1, exp: "Son adaptaciones anatómicas evolutivas indispensables para resistir el clima ártico." },
+  { a: "Ciencias", q: "48. ¿Cuál de las siguientes opciones constituye una fuente de energía renovable y limpia?", o: ["El carbón mineral", "El petróleo crudo", "La radiación solar", "El gas natural"], c: 2, exp: "La energía solar proviene de una fuente natural inagotable y no produce humos tóxicos." },
+  { a: "Ciencias", q: "49. Si frotas tus manos con fuerza durante 15 segundos, notarás calor inmediato. Esto se debe a:", o: ["La energía magnética de la piel", "La fuerza de fricción convertida en energía térmica", "La pérdida de masa en las manos", "La electricidad estática pura"], c: 1, exp: "El rozamiento mecánico entre dos superficies en movimiento genera calor por fricción." },
+  { a: "Ciencias", q: "50. De acuerdo con las guías de alimentación saludable, ¿cuál es la función primordial de las proteínas (huevo, legumbres, carne)?", o: ["Aportar agua a los riñones", "Formar y reparar tejidos, músculos y células", "Endulzar la sangre", "Bloquear el paso de vitaminas"], c: 1, exp: "Las proteínas cumplen un rol estructural básico en la formación celular y muscular." },
+  { a: "Ciencias", q: "51. ¿Qué gas indispensable para la respiración de la mayoría de los seres vivos es liberado por las plantas en la fotosíntesis?", o: ["Dióxido de carbono", "Oxígeno", "Metano", "Nitrógeno"], c: 1, exp: "Durante la fase luminosa de la fotosíntesis, el agua se descompone y libera oxígeno gaseoso (O2)." },
+  { a: "Ciencias", q: "52. ¿Por qué un barco de metal muy pesado flota en el mar mientras que una canica metálica pequeña se hunde?", o: ["Por el diseño hueco del barco que desplaza un gran volumen de agua generando empuje", "Porque el mar no tiene gravedad sobre objetos grandes", "Porque el agua de mar repele el hierro pintado", "Porque los barcos tienen motores encendidos"], c: 0, exp: "Principio de Arquímedes: la forma del casco hueco desplaza un volumen de agua cuyo peso supera la masa del barco." },
+  { a: "Ciencias", q: "53. Si en un circuito eléctrico simple desconectamos o abrimos el interruptor, ¿qué ocurre con el foco?", o: ["Brilla con mayor intensidad", "Se apaga porque se interrumpe el flujo continuo de electrones", "Explota inmediatamente", "Cambia de color a azul"], c: 1, exp: "Un circuito abierto impide el paso ordenado de la corriente eléctrica." },
+  { a: "Ciencias", q: "54. ¿Cuál es el principal factor causante del aumento del efecto invernadero y calentamiento global en la Tierra?", o: ["El uso de bicicletas en las ciudades", "La quema excesiva de combustibles fósiles que libera CO2", "La evaporación normal de los océanos", "El movimiento de rotación terrestre"], c: 1, exp: "Las emisiones industriales y de transporte incrementan la concentración atmosférica de gases de efecto invernadero." },
+  { a: "Ciencias", q: "55. Si se calienta agua en una olla con cuchara de metal y otra de madera adentro, ¿por qué la de metal quema más al tocarla?", o: ["La madera produce frío natural", "Los metales son excelentes conductores térmicos del calor", "El metal pesa más que la madera", "La madera no puede tocar agua caliente"], c: 1, exp: "El metal conduce el calor rápidamente por transferencia molecular; la madera es aislante." },
+  { a: "Ciencias", q: "56. ¿Qué función protectora cumplen las vacunas en el cuerpo de los niños?", o: ["Curar de inmediato dolores de cabeza", "Entrenar al sistema inmunológico generando anticuerpos preventivos", "Reemplazar la comida diaria", "Eliminar bacterias del estómago"], c: 1, exp: "Estimulan las defensas naturales produciendo memoria inmunológica contra virus y bacterias." },
+  { a: "Ciencias", q: "57. La fuerza invisible con la que el centro de la Tierra atrae a los objetos hacia el suelo se denomina:", o: ["Magnetismo solar", "Fuerza de gravedad", "Presión atmosférica", "Fuerza centrífuga"], c: 1, exp: "La gravedad terrestre atrae la masa de los cuerpos hacia el centro del planeta." },
+  { a: "Ciencias", q: "58. En una disolución de agua con sal bien revuelta donde no se distinguen los cristales a simple vista, tenemos:", o: ["Una mezcla homogénea", "Una mezcla heterogénea", "Una reacción nuclear", "Un compuesto químico nuevo"], c: 0, exp: "En las mezclas homogéneas sus fases y componentes no pueden diferenciarse visualmente." },
+  { a: "Ciencias", q: "59. En el ciclo del agua, ¿qué proceso permite que el agua de ríos y mares pase a la atmósfera en forma de vapor?", o: ["Precipitación", "Evaporación provocada por el calor del Sol", "Infiltración profunda", "Congelamiento polar"], c: 1, exp: "La radiación solar eleva la temperatura del agua superficial provocando su evaporación." },
+  { a: "Ciencias", q: "60. La regla de las '3 R' busca proteger el medio ambiente. ¿A cuál de ellas corresponde usar termos rellenables de agua en vez de botellas desechables?", o: ["Reciclar plásticos triturados", "Reducir la generación innecesaria de basura plástica", "Romper envases viejos", "Reaccionar químicamente"], c: 1, exp: "Utilizar envases duraderos disminuye o reduce directamente el volumen de basura generada." }
+];
 
-        if (parseInt(form.p4.value) === respuestasCorrectas.p4) { puntos++; puntosMat++; }
-        if (parseFloat(form.p5.value) === respuestasCorrectas.p5) { puntos++; puntosMat++; }
-        if (form.p6.value === respuestasCorrectas.p6) { puntos++; puntosMat++; }
+const ITEMS_PER_PAGE = 10;
+let currentPage = 1;
+const userAnswers = {};
 
-        if (form.p7.value === respuestasCorrectas.p7) { puntos++; puntosCie++; }
-        if (form.p8.value === respuestasCorrectas.p8) { puntos++; puntosCie++; }
+// Inicializar la prueba
+function initExam() {
+  renderGridNav();
+  renderPage(1);
+}
 
-        if (form.p9.value === respuestasCorrectas.p9) { puntos++; puntosSoc++; }
-        if (form.p10.value === respuestasCorrectas.p10) { puntos++; puntosSoc++; }
+// Renderizar la cuadrícula interactiva de 1 a 60
+function renderGridNav() {
+  const grid = document.getElementById("gridNav");
+  grid.innerHTML = "";
+  for (let i = 0; i < examData.length; i++) {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "grid-btn";
+    btn.id = `nav-btn-${i}`;
+    btn.innerText = i + 1;
+    btn.onclick = () => {
+      const targetPage = Math.floor(i / ITEMS_PER_PAGE) + 1;
+      renderPage(targetPage);
+      // Scroll al reactivo específico
+      const targetCard = document.getElementById(`card-${i}`);
+      if (targetCard) targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    };
+    grid.appendChild(btn);
+  }
+}
 
-        const nombre = document.getElementById('student-name').value || 'Estudiante';
-        const grupo = document.getElementById('student-group').value || '';
+// Renderizar un bloque de 10 reactivos
+function renderPage(page) {
+  currentPage = page;
+  const totalPages = Math.ceil(examData.length / ITEMS_PER_PAGE);
+  document.getElementById("pageIndicator").innerText = `Página ${page} de ${totalPages} (Reactivos ${(page-1)*ITEMS_PER_PAGE + 1} al ${Math.min(page*ITEMS_PER_PAGE, examData.length)})`;
 
-        document.getElementById('student-summary').innerText = `Alumno: ${nombre} ${grupo ? '(' + grupo + ')' : ''}`;
-        document.getElementById('score-display').innerText = `${puntos} / 10`;
-        
-        document.getElementById('score-esp').innerText = puntosEsp;
-        document.getElementById('score-mat').innerText = puntosMat;
-        document.getElementById('score-cie').innerText = puntosCie;
-        document.getElementById('score-soc').innerText = puntosSoc;
+  document.getElementById("prevBtn").disabled = (page === 1);
+  document.getElementById("nextBtn").disabled = (page === totalPages);
 
-        let mensaje = "";
-        if (puntos === 10) {
-            mensaje = "¡Excelente desempeño! Has demostrado un dominio completo de los temas.";
-        } else if (puntos >= 7) {
-            mensaje = "¡Buen trabajo! Has aprobado la evaluación; repasa los temas pendientes.";
-        } else {
-            mensaje = "Se recomienda reforzar las áreas de oportunidad identificadas.";
-        }
-        document.getElementById('feedback-message').innerText = mensaje;
+  const container = document.getElementById("questionsContainer");
+  container.innerHTML = "";
 
-        const modal = document.getElementById('result-modal');
-        modal.style.display = 'block';
-        modal.scrollIntoView({ behavior: 'smooth' });
+  const startIndex = (page - 1) * ITEMS_PER_PAGE;
+  const endIndex = Math.min(startIndex + ITEMS_PER_PAGE, examData.length);
+
+  for (let i = startIndex; i < endIndex; i++) {
+    const item = examData[i];
+    const card = document.createElement("div");
+    card.className = "question-card";
+    card.id = `card-${i}`;
+
+    let optionsHTML = "";
+    item.o.forEach((opt, optIndex) => {
+      const isChecked = userAnswers[i] === optIndex ? "checked" : "";
+      optionsHTML += `
+        <label class="opt-label">
+          <input type="radio" name="question_${i}" value="${optIndex}" ${isChecked} onchange="registrarRespuesta(${i}, ${optIndex})">
+          <span>${String.fromCharCode(65 + optIndex)}) ${opt}</span>
+        </label>
+      `;
+    });
+
+    card.innerHTML = `
+      <span class="area-badge badge-${item.a}">${item.a}</span>
+      <div class="q-text">${item.q}</div>
+      <div class="options-group">${optionsHTML}</div>
+    `;
+    container.appendChild(card);
+  }
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Registrar respuesta seleccionada
+function registrarRespuesta(qIndex, optIndex) {
+  userAnswers[qIndex] = optIndex;
+  const navBtn = document.getElementById(`nav-btn-${qIndex}`);
+  if (navBtn) navBtn.classList.add("answered");
+}
+
+function cambiarPagina(delta) {
+  const newPage = currentPage + delta;
+  const totalPages = Math.ceil(examData.length / ITEMS_PER_PAGE);
+  if (newPage >= 1 && newPage <= totalPages) {
+    renderPage(newPage);
+  }
+}
+
+// Calificación y Diagnóstico PISA
+function calificarPrueba() {
+  const name = document.getElementById("studentName").value.trim();
+  if (!name) {
+    alert("Por favor, introduce el nombre del alumno para generar el reporte.");
+    document.getElementById("studentName").focus();
+    return;
+  }
+
+  const contestadas = Object.keys(userAnswers).length;
+  if (contestadas < examData.length) {
+    const faltan = examData.length - contestadas;
+    if (!confirm(`Tienes ${faltan} reactivos sin responder. ¿Seguro que deseas entregar la prueba?`)) {
+      return;
     }
+  }
+
+  let totalScore = 0;
+  let scoresByArea = { "Lectura": 0, "Matemáticas": 0, "Ciencias": 0 };
+  const reviewContainer = document.getElementById("detailedReview");
+  reviewContainer.innerHTML = "";
+
+  examData.forEach((item, index) => {
+    const userChoice = userAnswers[index];
+    const isCorrect = userChoice === item.c;
+
+    if (isCorrect) {
+      totalScore++;
+      scoresByArea[item.a]++;
+    }
+
+    const reviewDiv = document.createElement("div");
+    reviewDiv.className = `review-item ${isCorrect ? 'correct-ans' : 'incorrect-ans'}`;
+    const userText = userChoice !== undefined ? `${String.fromCharCode(65 + userChoice)}) ${item.o[userChoice]}` : "Sin respuesta";
+    const correctText = `${String.fromCharCode(65 + item.c)}) ${item.o[item.c]}`;
+
+    reviewDiv.innerHTML = `
+      <strong>Reactivo ${index + 1} (${item.a}):</strong> ${isCorrect ? '✓ Correcto' : '✗ Incorrecto'}<br>
+      <span style="color:#475569;">Tu respuesta: <b>${userText}</b></span><br>
+      <span style="color:#1e293b;">Respuesta correcta: <b>${correctText}</b></span><br>
+      <small style="color:#334155;"><em>Justificación pedagógica:</em> ${item.exp}</small>
+    `;
+    reviewContainer.appendChild(reviewDiv);
+  });
+
+  const percent = Math.round((totalScore / examData.length) * 100);
+
+  // Niveles de logro PISA
+  let nivelPISA = "";
+  if (percent >= 85) nivelPISA = "Nivel 4 / 5: Competente Avanzado (Capacidad analítica sobresaliente para relacionar conceptos complejos).";
+  else if (percent >= 70) nivelPISA = "Nivel 3: Competente Satisfactorio (Aplica reglas matemáticas y científicas habituales y comprende textos variados).";
+  else if (percent >= 50) nivelPISA = "Nivel 2: Desempeño Básico (Umbral mínimo PISA; reconoce ideas centrales y efectúa cálculos directos).";
+  else nivelPISA = "Nivel 1: En Desarrollo / Requiere Apoyo Focalizado (Dificultades en inferencia lectora y razonamiento deductivo).";
+
+  // Desplegar datos en el DOM
+  document.getElementById("resStudent").innerText = `Informe Diagnóstico: ${name}`;
+  document.getElementById("resTotal").innerText = `${totalScore} / ${examData.length}`;
+  document.getElementById("resPercentage").innerText = `Porcentaje de acierto global: ${percent}%`;
+  document.getElementById("resLevel").innerText = nivelPISA;
+
+  document.getElementById("scoreLectura").innerText = `${scoresByArea["Lectura"]} / 20`;
+  document.getElementById("scoreMate").innerText = `${scoresByArea["Matemáticas"]} / 20`;
+  document.getElementById("scoreCiencias").innerText = `${scoresByArea["Ciencias"]} / 20`;
+
+  const resultsArea = document.getElementById("results-area");
+  resultsArea.style.display = "block";
+  resultsArea.scrollIntoView({ behavior: "smooth" });
+}
+
+// Cargar la prueba al abrir
+window.onload = initExam;
 </script>
 
 </body>
